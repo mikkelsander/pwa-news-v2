@@ -115,17 +115,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.grid {
-  display: grid;
-  grid-auto-flow: row;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
-  grid-gap: 10px;
-}
-
-v-img {
-  opacity: 0.5;
-}
-</style>

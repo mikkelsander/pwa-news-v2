@@ -3,9 +3,12 @@
 
     <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field>
 
-    <v-tabs v-model="tabs" centered grow color="transparent" slider-color="black">
-      <v-tab v-for="name in tabNames" :key="name">
-        {{ name }} 
+    <v-tabs v-model="tabs" centered grow color="transparent" slider-color="indigo">
+      <v-tab>
+          <span>Publishers</span>
+      </v-tab>
+      <v-tab>
+          <span>Countries</span>
       </v-tab>
     </v-tabs>
 
@@ -33,9 +36,7 @@ export default {
   data: () => ({
     title: 'Discover',
     tabs: null,
-    tabNames: ['Publishers', 'Countries'],
-    text:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+    tabNames: ['Publishers', 'Countries']
   })
 };
 </script>

@@ -34,10 +34,10 @@ export default new Router({
       component: Discover
     },
     {
-      path: "/settings",
-      name: "settings",
+      path: "/subscriptions",
+      name: "subscriptions",
       component: () =>
-        import("./components/Settings.vue")
+        import("./components/Subscriptions.vue")
     },
     {
       path: "/publisher/:id",
