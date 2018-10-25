@@ -2,7 +2,7 @@
   <v-app>
     <v-toolbar color app>
       <v-toolbar-title class="headline">
-        <span><em>NewsFeeder</em></span>
+        <span><em>News Feed</em></span>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>

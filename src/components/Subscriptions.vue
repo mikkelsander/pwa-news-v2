@@ -74,69 +74,40 @@
                 <v-divider :inset="true" :key="country.name + '-divider'"></v-divider>
             </template>
 
-
-
         </v-list>
+
+    <v-snackbar v-model="showSnackbar" top :timeout="2000">
+      {{ snackbarMessage }}
+    </v-snackbar>
+
     </v-card>
+
 </template>
 
-
 <script>
-import countryList from '../assets/countries/country-list.json';
-
 export default {
   data: () => ({
-    countries: []
+    showSnackbar: false,
+    snackbarMessage: ''
   }),
 
   computed: {
     publishers() {
-      console.log('getting subscriptions');
+      console.log('getting pub subs');
       return this.$store.getters.publisherSubscriptions;
+    },
+    countries() {
+      console.log('getting country subs');
+      return this.$store.getters.countrySubscriptions;
     }
-  },
-
-  created() {
-    const mockPublishers = [
-      {
-        category: 'general',
-        country: 'us',
-        description:
-          'This is a description. Lorem Ipsum I need this text to be longer, so i looks better. Mikkel is a sexy motherfucker',
-        id: 'abc-news',
-        language: 'en',
-        name: 'ABC News',
-        url: 'https://abcnews.go.com'
-      },
-      {
-        category: 'general',
-        country: 'au',
-        description:
-          "Australia's most trusted source of local, national and world news. Comprehensive, independent, in-depth analysis, the latest business, sport, weather and more.",
-        id: 'abc-news-au',
-        language: 'en',
-        name: 'ABC News (AU)',
-        url: 'http://www.abc.net.au/news'
-      },
-      {
-        category: 'general',
-        country: 'no',
-        description:
-          'Norges ledende nettavis med alltid oppdaterte nyheter innenfor innenriks, utenriks, sport og kultur.',
-        id: 'aftenposten',
-        language: 'no',
-        name: 'Aftenposten',
-        url: 'https://www.aftenposten.no'
-      }
-    ];
-
-    this.countries = countryList.countries;
   },
 
   methods: {
     unsubscribe(publisher) {
       console.log('unsubscribing ' + publisher.name);
       this.$store.commit('removePublisherSubscription', publisher);
+      this.showSnackbar = true;
+      this.snackbarMessage = `You are no longer subscribed to ${publisher.name}`;
     }
   }
 };

@@ -90,8 +90,10 @@
       </v-card>
     </v-dialog> -->
 
-    <v-snackbar v-model="snackbar" top :timeout="2000">
-      {{ publisher.name }} was added to subscriptions
+    <v-snackbar v-model="showSnackbar" top :timeout="2000">
+      <div class="text-xs-center">
+        Subscribing to top headlines from {{ publisher.name }}
+      </div>
     </v-snackbar>
 
   </v-layout>
@@ -109,14 +111,14 @@ export default {
 
   data: () => ({
     dialog: false,
-    snackbar: false
+    showSnackbar: false
   }),
 
   methods: {
     subscribe() {
       console.log('subscribing to ' + this.publisher.name);
-      this.$store.dispatch('addPublisherSubscription', this.publisher)
-      this.snackbar = true;
+      this.$store.dispatch('addPublisherSubscription', this.publisher);
+      this.showSnackbar = true;
     }
   }
 };

@@ -1,9 +1,11 @@
 <template>
   <v-container>
 
-    <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field>
+    <!-- <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field> -->
+    
+    <publisher-list></publisher-list>
 
-    <v-tabs v-model="tabs" centered grow color="transparent" slider-color="indigo">
+    <!-- <v-tabs v-model="tabs" centered grow color="transparent" slider-color="indigo">
       <v-tab>
           <span>Publishers</span>
       </v-tab>
@@ -14,12 +16,11 @@
 
     <v-tabs-items v-model="tabs">
       <v-tab-item>
-        <publisher-list></publisher-list>
       </v-tab-item>
       <v-tab-item>
         <country-list></country-list>
       </v-tab-item>
-    </v-tabs-items>
+    </v-tabs-items> -->
 
   </v-container>
 </template>

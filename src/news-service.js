@@ -22,3 +22,13 @@ export async function getTopHeadlinesFromCountry(country) {
     const json = await res.json()
     return json.articles;
 }
+
+export async function getHeadlinesFromPublishers(publishers) {
+    if (publishers.count < 1) return;
+
+    const sources = publishers.toString();
+    console.log("sources: " + sources)
+    const res = await fetch(`https://newsapi.org/v2/top-headlines?sources=${sources}&apiKey=${newsApiKey}`)
+    const json = await res.json()
+    return json.articles;
+}

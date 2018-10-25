@@ -23,16 +23,20 @@ export default new Vuex.Store({
     },
     publisherSubscriptions: state => {
       return state.subscriptions.publishers.sort(publisher => publisher.name);
+    },
+    publisherSubscriptionsIdList: state => {
+      return state.subscriptions.publishers.map(publisher => publisher.id);
+    },
+    publisherUrl: state => name => {
+      return state.subscriptions.publishers.find(publisher => publisher.name === name);
     }
+
 
   },
   mutations: {
 
-    addCountrySubscription(state, country) {
-      let copy = [...state.subscriptions.countries];
-      if (copy.includes(country)) return;
-      copy.push(country);
-      Vue.set(state, 'countries', copy)
+    updateCountrySubscriptions(state, countries) {
+      Vue.set(state.subscriptions, 'countries', countries)
     },
 
     removeCountrySubscription(state, country) {
@@ -46,8 +50,8 @@ export default new Vuex.Store({
 
     updatePublisherSubscriptions(state, publishers) {
       Vue.set(state.subscriptions, 'publishers', publishers)
-
     },
+
     removePublisherSubscription(state, publisher) {
       let copy = [...state.subscriptions.publishers];
       if (!copy.includes(publisher)) return;
@@ -67,14 +71,31 @@ export default new Vuex.Store({
 
   },
   actions: {
-    addPublisherSubscription( { commit, state }, newSub ) {
+    addPublisherSubscription({
+      commit,
+      state
+    }, newSub) {
       let copy = [...state.subscriptions.publishers];
       const alreadySubscribed = copy.find(oldSub => oldSub.id === newSub.id); //undefined if not found
 
-      if(alreadySubscribed) return;
+      if (alreadySubscribed) return;
 
       copy.push(newSub);
       commit('updatePublisherSubscriptions', copy)
+      commit('incrementSubscriptionsBadge')
+    },
+
+    addCountrySubscription({
+      commit,
+      state
+    }, newSub) {
+      let copy = [...state.subscriptions.countries];
+      const alreadySubscribed = copy.find(oldSub => oldSub.name === newSub.name); //undefined if not found
+
+      if (alreadySubscribed) return;
+
+      copy.push(newSub);
+      commit('updateCountrySubscriptions', copy)
       commit('incrementSubscriptionsBadge')
     }
   },
