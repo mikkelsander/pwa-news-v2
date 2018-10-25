@@ -1,7 +1,7 @@
 <template>
     <v-card>
-        <v-card-title class="title">
-            Active subscriptions
+        <v-card-title>
+            <div class="headline">Active subscriptions</div>
         </v-card-title>
 
         <v-list two-line>
