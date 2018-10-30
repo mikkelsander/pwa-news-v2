@@ -2,14 +2,14 @@
 	<div @click="expand = !expand">
 		<v-card class="px-3 pt-3 pb-0">
 			<v-layout row class="pb-3">
-				<v-flex xs8>
+				<v-flex xs7>
 					<v-avatar size="20px" class="mr-1">
 						<v-img :src="avatarUrl"></v-img>
 					</v-avatar>
 					<span class="caption">{{ article.source.name }}</span>
 				</v-flex>
-				<v-flex xs4>
-					<div class="timestamp">{{ article.publishedAt | moment('from', 'now') }}</div>
+				<v-flex xs5>
+					<div class="timestamp">{{ distanceInWordsToNow(new Date(article.publishedAt)) }} ago</div>
 				</v-flex>
 			</v-layout>
 			<v-layout row class="pb-3">
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import { distanceInWordsToNow } from 'date-fns';
+
 export default {
   props: {
     article: {
@@ -58,7 +60,8 @@ export default {
     }
   },
   data: () => ({
-    expand: false
+    expand: false,
+    distanceInWordsToNow
   }),
   computed: {
     avatarUrl() {
