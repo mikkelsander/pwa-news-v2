@@ -35,10 +35,10 @@ export default {
     }
   },
   methods: {
-      resetSubscriptionBadge() {
-          this.$store.commit('resetSubscriptionsBadge');
-      }
-  },
+    resetSubscriptionBadge() {
+      this.$store.commit('resetSubscriptionsBadge');
+    }
+  }
 };
 </script>
 
@@ -49,7 +49,6 @@ export default {
   width: 15px !important;
   top: -4px !important;
   right: -4px !important;
-
 }
 
 .v-item-group.v-bottom-nav .v-btn:not(.v-btn--active) {
@@ -57,7 +56,7 @@ export default {
   opacity: 1;
 }
 
-.v-bottom-nav .v-btn:not(.v-btn--active) i, 
+.v-bottom-nav .v-btn:not(.v-btn--active) i,
 .v-bottom-nav .v-btn:not(.v-btn--active) span:first-child {
   filter: grayscale(100%);
   opacity: 0.5;
@@ -67,5 +66,4 @@ export default {
   filter: none;
   opacity: 1;
 }
-
 </style>
