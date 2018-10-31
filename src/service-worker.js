@@ -8,7 +8,7 @@ workbox.core.setCacheNameDetails({
 workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
 
 
-//cache avaiable publishers
+//cache available publishers
 
 workbox.routing.registerRoute(
     new RegExp('https://newsapi.org/v2/sources?(.*)'),
@@ -28,7 +28,7 @@ workbox.routing.registerRoute(
 
 workbox.routing.registerRoute(
     /https:\/\/icon-locator\.herokuapp\.com\/icon\?url=(.*)/,
-    workbox.strategies.staleWhileRevalidate({
+    workbox.strategies.cacheFirst({
         cacheName: 'publisher-icons',
         plugins: [
             new workbox.expiration.Plugin({

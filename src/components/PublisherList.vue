@@ -2,7 +2,7 @@
 
     <v-list two-line>
 
-      <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field>
+      <v-text-field class="mx-3 mt-3" label="Not working" prepend-inner-icon="search" solo></v-text-field>
 
       <v-subheader>
         Showing {{ publishers.length }} publishers

@@ -6,14 +6,26 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
+
+      <v-toolbar-items>
+        <v-snackbar v-model="showOfflineSnack" top :timeout="0">
+          <span>You are offline</span>
+          <v-btn color="pink" flat @click="showOfflineSnack = false">
+            Ok
+          </v-btn>
+        </v-snackbar>
+      </v-toolbar-items>
+
     </v-toolbar>
 
     <v-content>
       <router-view v-if="!isLoading" />
+
     </v-content>
 
-    <bottom-navigation></bottom-navigation>
 
+
+    <bottom-navigation></bottom-navigation>
   </v-app>
 </template>
 
@@ -25,10 +37,22 @@ export default {
   components: {
     BottomNavigation
   },
+  data: () => ({
+    showOfflineSnack: false
+  }),
   computed: {
     isLoading() {
       return this.$store.state.loadingState;
     }
+  },
+  methods: {
+    updateOnlineStatus() {
+      this.showOfflineSnack = !window.navigator.onLine;
+    }
+  },
+  created() {
+    window.addEventListener('online', this.updateOnlineStatus);
+    window.addEventListener('offline', this.updateOnlineStatus);
   }
 };
 </script>
