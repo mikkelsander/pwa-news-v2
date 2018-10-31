@@ -11,7 +11,7 @@
 
 				<v-list-tile :key="country.name + '-item'" avatar>
 					<v-list-tile-avatar>
-						<v-img :src="require(`../assets/countries/flags/${country.code.toLowerCase()}.svg`)"></v-img>
+						<v-img crossorigin="anonymous" :src="require(`../assets/countries/flags/${country.code.toLowerCase()}.svg`)"></v-img>
 					</v-list-tile-avatar>
 
 

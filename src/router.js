@@ -1,7 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
+import Feed from './components/Feed.vue'
 import Discover from './components/Discover.vue';
 import Publisher from './components/Publisher.vue';
+import Subscriptions from './components/Subscriptions.vue'
 
 Vue.use(Router);
 
@@ -13,27 +15,22 @@ export default new Router({
     {
       path: "/feed",
       name: "feed",
-
-      component: () =>
-        import("./components/Feed.vue")
+      component: Feed
     },
     {
       path: "/discover",
       name: "discover",
-      component: () =>
-        import("./components/Discover.vue")
+      component: Discover
     },
     {
       path: "/subscriptions",
       name: "subscriptions",
-      component: () =>
-        import("./components/Subscriptions.vue")
+      component: Subscriptions
     },
     {
       path: "/publisher/:id",
       name: "publisher",
-      component: () =>
-        import("./components/Publisher.vue"),
+      component: Publisher,
       props: true
     },
 

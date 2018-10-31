@@ -5,14 +5,14 @@ import {
 
 
 
-export async function getSources() {
+export async function getAllPublishers() {
     const res = await fetch(`https://newsapi.org/v2/sources?apiKey=${newsApiKey}`)
     const json = await res.json();
     return json.sources;
 }
 
-export async function getTopHeadlinesFromSource(source) {
-    const res = await fetch(`https://newsapi.org/v2/top-headlines?sources=${source}&apiKey=${newsApiKey}`)
+export async function getHeadlinesFromPublisher(publisherID) {
+    const res = await fetch(`https://newsapi.org/v2/top-headlines?sources=${publisherID}&apiKey=${newsApiKey}`)
     const json = await res.json();
     return json.articles;
 }

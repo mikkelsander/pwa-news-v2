@@ -21,12 +21,11 @@ export default new Vuex.Store({
     countrySubscriptions: state => {
       return state.subscriptions.countries.sort(country => country.name);
     },
+
     publisherSubscriptions: state => {
       return state.subscriptions.publishers.sort(publisher => publisher.name);
     },
-    publisherSubscriptionsIdList: state => {
-      return state.subscriptions.publishers.map(publisher => publisher.id);
-    },
+
     publisherUrl: state => name => {
       return state.subscriptions.publishers.find(publisher => publisher.name === name);
     }

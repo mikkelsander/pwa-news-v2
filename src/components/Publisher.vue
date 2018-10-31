@@ -4,7 +4,7 @@
       <v-card>
         <v-card flat>
 
-          <v-img contain height="320px" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=100..300..400`">
+          <v-img crossorigin="anonymous" contain height="320px" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=100..300..400`">
           </v-img>
 
 

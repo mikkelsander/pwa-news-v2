@@ -5,13 +5,13 @@
           <v-text-field class="mx-3 mt-3"  label="Search" prepend-inner-icon="search" solo></v-text-field>
 
 			<v-subheader>
-				Showing 128 publishers
+				Showing {{ publishers.length }} publishers
 			</v-subheader>
 			<template v-for="publisher in publishers">
 
 				<v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
 					<v-list-tile-avatar>
-						<v-img :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
+						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
 					</v-list-tile-avatar>
 
 					<v-list-tile-content>
@@ -34,10 +34,18 @@
 </template>
 
 <script>
+import { getAllPublishers } from '@/news-service';
+
 export default {
   data: () => ({
     publishers: []
   }),
+
+  methods: {
+    async getPublishers() {
+      this.publishers = await getAllPublishers();
+    }
+  },
 
   created() {
     const mockPublishers = [
@@ -113,7 +121,7 @@ export default {
       }
     ];
 
-    this.publishers = mockPublishers;
+    this.getPublishers();
   }
 };
 </script>

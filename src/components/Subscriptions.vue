@@ -14,7 +14,7 @@
 
                 <v-list-tile :key="publisher.id + '-item'" avatar>
                     <v-list-tile-avatar>
-                        <v-img :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
+                        <v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
