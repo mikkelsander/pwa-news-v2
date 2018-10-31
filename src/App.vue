@@ -9,7 +9,7 @@
     </v-toolbar>
 
     <v-content>
-      <router-view />
+      <router-view v-if="!isLoading" />
     </v-content>
 
     <bottom-navigation></bottom-navigation>
@@ -24,6 +24,11 @@ export default {
   name: 'App',
   components: {
     BottomNavigation
+  },
+  computed: {
+    isLoading() {
+      return this.$store.state.loadingState;
+    }
   }
 };
 </script>

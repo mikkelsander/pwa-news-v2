@@ -1,16 +1,19 @@
 <template>
-<v-container>
-  <v-layout column> 
-    <v-subheader>
-      Today's news
-    </v-subheader>
-    <v-flex class="mb-2" v-for="(article, index)  in sortedArticles" :key="index">
-      <article-card :article="article"> </article-card>
-    </v-flex>
-  </v-layout>
+  <v-container>
+    <v-layout column>
+      <v-subheader>
+        Today's news
+      </v-subheader>
+      <div class="text-xs-center mt-5" v-if="showSpinner">
+        <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+      </div>
+        <v-flex class="mb-2" v-for="(article, index)  in sortedArticles" :key="index" v-else>
+          <article-card :article="article"> </article-card>
+        </v-flex>
+    </v-layout>
 
 
-</v-container>
+  </v-container>
 </template>
 
 <script>
@@ -25,7 +28,8 @@ export default {
   },
   data: () => ({
     title: 'Feed',
-    articles: []
+    articles: [],
+    showSpinner: true
   }),
   computed: {
     publisherSubscriptions() {
@@ -41,8 +45,9 @@ export default {
 
   methods: {
     async getArticles() {
-      let fetchedArticles = [];
+      this.showSpinner = true;
 
+      let fetchedArticles = [];
       if (this.publisherSubscriptions.length < 1) return;
 
       for (const publisher of this.publisherSubscriptions) {
@@ -50,10 +55,13 @@ export default {
       }
 
       this.articles = fetchedArticles;
+      this.showSpinner = false;
     }
   },
 
-  mounted() {
+  created() {
+    console.log('mounted');
+    console.log(this.publisherSubscriptions);
     this.getArticles();
   }
 };

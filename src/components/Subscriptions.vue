@@ -1,5 +1,6 @@
 <template>
-    <v-card>
+    
+    <v-card height="100%">
         <v-card-title>
             <div class="headline">Active subscriptions</div>
         </v-card-title>
@@ -105,7 +106,7 @@ export default {
   methods: {
     unsubscribe(publisher) {
       console.log('unsubscribing ' + publisher.name);
-      this.$store.commit('removePublisherSubscription', publisher);
+      this.$store.dispatch('deletePublisherSubscription', publisher);
       this.showSnackbar = true;
       this.snackbarMessage = `You are no longer subscribed to ${publisher.name}`;
     }

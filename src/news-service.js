@@ -3,8 +3,6 @@ import {
     newsApiKey
 } from '../secrets.js';
 
-
-
 export async function getAllPublishers() {
     const res = await fetch(`https://newsapi.org/v2/sources?apiKey=${newsApiKey}`)
     const json = await res.json();

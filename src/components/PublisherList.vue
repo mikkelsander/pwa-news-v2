@@ -1,36 +1,41 @@
 <template>
-	<v-card>
-		<v-list two-line>
 
-          <v-text-field class="mx-3 mt-3"  label="Search" prepend-inner-icon="search" solo></v-text-field>
+    <v-list two-line>
 
-			<v-subheader>
-				Showing {{ publishers.length }} publishers
-			</v-subheader>
-			<template v-for="publisher in publishers">
+      <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field>
 
-				<v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
-					<v-list-tile-avatar>
-						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
-					</v-list-tile-avatar>
+      <v-subheader>
+        Showing {{ publishers.length }} publishers
+      </v-subheader>
 
-					<v-list-tile-content>
-						<v-list-tile-title v-html="publisher.name"></v-list-tile-title>
-						<v-list-tile-sub-title v-html="publisher.category"></v-list-tile-sub-title>
-					</v-list-tile-content>
+      <div class="text-xs-center mt-5" v-if="showSpinner">
+        <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+      </div>
 
-					<v-list-tile-action>
-						<!-- <v-list-tile-action-text>{{publisher}}}</v-list-tile-action-text> -->
-						
-					</v-list-tile-action>
+      <template v-for="publisher in publishers" v-else>
 
-				</v-list-tile>
+        <v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
+          <v-list-tile-avatar>
+            <v-img :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
+          </v-list-tile-avatar>
 
-				<v-divider :inset="true" :key="publisher.id + '-divider'"></v-divider>
+          <v-list-tile-content>
+            <v-list-tile-title v-html="publisher.name"></v-list-tile-title>
+            <v-list-tile-sub-title v-html="publisher.category"></v-list-tile-sub-title>
+          </v-list-tile-content>
 
-			</template>
-		</v-list>
-	</v-card>
+          <v-list-tile-action>
+            <!-- <v-list-tile-action-text>{{publisher}}}</v-list-tile-action-text> -->
+
+          </v-list-tile-action>
+
+        </v-list-tile>
+
+        <v-divider :inset="true" :key="publisher.id + '-divider'"></v-divider>
+
+      </template>
+    </v-list>
+
 </template>
 
 <script>
@@ -38,12 +43,15 @@ import { getAllPublishers } from '@/news-service';
 
 export default {
   data: () => ({
-    publishers: []
+    publishers: [],
+    showSpinner: true
   }),
 
   methods: {
     async getPublishers() {
+      this.showSpinner = true;
       this.publishers = await getAllPublishers();
+      this.showSpinner = false;
     }
   },
 
@@ -121,7 +129,7 @@ export default {
       }
     ];
 
-    this.getPublishers();
+    this.publishers = this.getPublishers();
   }
 };
 </script>

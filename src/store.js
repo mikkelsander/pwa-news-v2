@@ -1,21 +1,22 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from 'vue';
+import Vuex from 'vuex';
+import IndexDbService from '@/idb-service';
+
+const subscriptionStore = 'subscriptions';
+const IDBService = new IndexDbService();
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     subscriptions: {
-      countries: [
-
-      ],
-      publishers: [
-
-      ]
+      countries: [],
+      publishers: []
     },
     badges: {
-      subscriptions: 0,
-    }
+      subscriptions: 0
+    },
+    loadingState: true
   },
   getters: {
     countrySubscriptions: state => {
@@ -29,34 +30,16 @@ export default new Vuex.Store({
     publisherUrl: state => name => {
       return state.subscriptions.publishers.find(publisher => publisher.name === name);
     }
-
-
   },
+
   mutations: {
 
-    updateCountrySubscriptions(state, countries) {
-      Vue.set(state.subscriptions, 'countries', countries)
-    },
-
-    removeCountrySubscription(state, country) {
-      let copy = [...state.subscriptions.countries];
-      if (!copy.includes(country)) return;
-      const index = copy.indexOf(country);
-      copy.splice(index, 1);
-      Vue.set(state, 'countries', copy);
-
+    setLoadingState(state, loadingState) {
+      state.loadingState = loadingState;
     },
 
     updatePublisherSubscriptions(state, publishers) {
-      Vue.set(state.subscriptions, 'publishers', publishers)
-    },
-
-    removePublisherSubscription(state, publisher) {
-      let copy = [...state.subscriptions.publishers];
-      if (!copy.includes(publisher)) return;
-      const index = copy.indexOf(publisher);
-      copy.splice(index, 1);
-      Vue.set(state.subscriptions, 'publishers', copy);
+      Vue.set(state.subscriptions, 'publishers', publishers);
     },
 
     incrementSubscriptionsBadge(state) {
@@ -65,38 +48,54 @@ export default new Vuex.Store({
 
     resetSubscriptionsBadge(state) {
       state.badges.subscriptions = 0;
-    },
-
-
-  },
-  actions: {
-    addPublisherSubscription({
-      commit,
-      state
-    }, newSub) {
-      let copy = [...state.subscriptions.publishers];
-      const alreadySubscribed = copy.find(oldSub => oldSub.id === newSub.id); //undefined if not found
-
-      if (alreadySubscribed) return;
-
-      copy.push(newSub);
-      commit('updatePublisherSubscriptions', copy)
-      commit('incrementSubscriptionsBadge')
-    },
-
-    addCountrySubscription({
-      commit,
-      state
-    }, newSub) {
-      let copy = [...state.subscriptions.countries];
-      const alreadySubscribed = copy.find(oldSub => oldSub.name === newSub.name); //undefined if not found
-
-      if (alreadySubscribed) return;
-
-      copy.push(newSub);
-      commit('updateCountrySubscriptions', copy)
-      commit('incrementSubscriptionsBadge')
     }
   },
 
+  actions: {
+    setInitialState({
+      commit
+    }) {
+
+      commit('setLoadingState', true);
+
+      IDBService.openConnection();
+
+      IDBService.getAllItemsFromStore(subscriptionStore).then(subscriptions => {
+        commit('updatePublisherSubscriptions', subscriptions);
+        commit('setLoadingState', false);
+      });
+    },
+
+    addPublisherSubscription({
+      commit,
+      state
+    }, subscription) {
+      let copy = [...state.subscriptions.publishers];
+      const alreadySubscribed = copy.find(oldSub => oldSub.id === subscription.id); //undefined if not found
+
+      if (alreadySubscribed) return;
+
+      copy.push(subscription);
+      commit('updatePublisherSubscriptions', copy);
+      commit('incrementSubscriptionsBadge');
+
+      IDBService.addItemToStore(subscription, subscriptionStore);
+    },
+
+    deletePublisherSubscription({
+      commit,
+      state
+    }, subscription) {
+      let copy = [...state.subscriptions.publishers];
+      const notSubscribed = !copy.includes(subscription);
+
+      if (notSubscribed) return;
+
+      const index = copy.indexOf(subscription);
+      copy.splice(index, 1);
+      commit('updatePublisherSubscriptions', copy);
+
+      IDBService.deleteItemFromStore(subscription.id, subscriptionStore);
+    }
+  }
 });

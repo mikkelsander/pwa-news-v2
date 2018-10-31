@@ -4,10 +4,8 @@
       <v-card>
         <v-card flat>
 
-          <v-img crossorigin="anonymous" contain height="320px" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=100..300..400`">
+          <v-img contain height="320px" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=100..300..400`">
           </v-img>
-
-
 
           <v-btn id="fab" color="indigo" absolute fab bottom right @click="subscribe()">
             <v-icon color="white">add</v-icon>

@@ -1,9 +1,15 @@
 <template>
-  <v-container>
+  <v-container fill-height>
+    <v-layout>
+      <v-flex>
+        <v-card height="100%" class="xs-12">
+          <publisher-list></publisher-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
 
     <!-- <v-text-field class="mx-3 mt-3" label="Search" prepend-inner-icon="search" solo></v-text-field> -->
-    
-    <publisher-list></publisher-list>
+
 
     <!-- <v-tabs v-model="tabs" centered grow color="transparent" slider-color="indigo">
       <v-tab>
@@ -21,7 +27,6 @@
         <country-list></country-list>
       </v-tab-item>
     </v-tabs-items> -->
-
   </v-container>
 </template>
 
