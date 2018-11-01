@@ -5,7 +5,7 @@
 				<v-layout row class="pb-3">
 					<v-flex xs7>
 						<v-avatar size="20px" class="mr-1">
-							<v-img crossorigin="anonymous" :src="avatarUrl"></v-img>
+							<v-img :src="avatarUrl"></v-img>
 						</v-avatar>
 						<span class="caption">{{ article.source.name }}</span>
 					</v-flex>
@@ -22,7 +22,7 @@
 						</v-card-title>
 					</v-flex>
 					<v-flex xs4>
-						<v-img crossorigin="anonymous" :src="imageUrl" height="90px" width="100%"></v-img>
+						<v-img :src="imageUrl" height="90px" width="100%"></v-img>
 					</v-flex>
 				</v-layout>
 			</div>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { distanceInWordsToNow } from 'date-fns';
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 export default {
   props: {
