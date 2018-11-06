@@ -7,6 +7,7 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import VLazyImage from "v-lazy-image";
 
 Vue.config.productionTip = false;
 

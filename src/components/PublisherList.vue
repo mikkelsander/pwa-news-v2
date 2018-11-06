@@ -16,7 +16,7 @@
 
         <v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
           <v-list-tile-avatar>
-            <v-img :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
+            <v-lazy-image :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-lazy-image>
           </v-list-tile-avatar>
 
           <v-list-tile-content>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import VLazyImage from "v-lazy-image";
 import { getAllPublishers } from '@/news-service';
 
 export default {
@@ -130,6 +131,9 @@ export default {
     ];
 
     this.publishers = this.getPublishers();
+  },
+  components: {
+    VLazyImage
   }
 };
 </script>
