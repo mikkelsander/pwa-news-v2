@@ -37,13 +37,13 @@ import PublisherList from './PublisherList';
 export default {
   components: {
     CountryList,
-    PublisherList
+    PublisherList,
   },
   data: () => ({
     title: 'Discover',
     tabs: null,
-    tabNames: ['Publishers', 'Countries']
-  })
+    tabNames: ['Publishers', 'Countries'],
+  }),
 };
 </script>
 

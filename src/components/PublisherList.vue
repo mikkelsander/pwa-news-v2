@@ -1,59 +1,74 @@
 <template>
 
-    <v-list two-line>
+  <v-list two-line>
 
-      <!-- <v-text-field class="mx-3 mt-3" label="Not working" prepend-inner-icon="search" solo></v-text-field> -->
+    <v-text-field color="indigo" class="mx-4 mt-3" prepend-inner-icon="search" label="Search" v-model="search" solo></v-text-field>
+    
+    <v-subheader>
+      Showing {{ publishers.length }} publishers
+    </v-subheader>
 
-      <v-subheader>
-        Showing {{ publishers.length }} publishers
-      </v-subheader>
+    <div class="text-xs-center mt-5" v-if="showSpinner">
+      <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+    </div>
 
-      <div class="text-xs-center mt-5" v-if="showSpinner">
-        <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
-      </div>
+    <template v-for="publisher in filteredPublishers" v-else>
 
-      <template v-for="publisher in publishers" v-else>
+      <v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
+        <v-list-tile-avatar>
+          <v-lazy-image :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-lazy-image>
+        </v-list-tile-avatar>
 
-        <v-list-tile :key="publisher.id + '-item'" avatar @click="$router.push({ name: 'publisher', params: { publisher: publisher } })">
-          <v-list-tile-avatar>
-            <v-lazy-image :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-lazy-image>
-          </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title v-html="publisher.name"></v-list-tile-title>
+          <v-list-tile-sub-title v-html="publisher.category"></v-list-tile-sub-title>
+        </v-list-tile-content>
 
-          <v-list-tile-content>
-            <v-list-tile-title v-html="publisher.name"></v-list-tile-title>
-            <v-list-tile-sub-title v-html="publisher.category"></v-list-tile-sub-title>
-          </v-list-tile-content>
+        <v-list-tile-action>
+          <!-- <v-list-tile-action-text>{{publisher}}}</v-list-tile-action-text> -->
 
-          <v-list-tile-action>
-            <!-- <v-list-tile-action-text>{{publisher}}}</v-list-tile-action-text> -->
+        </v-list-tile-action>
 
-          </v-list-tile-action>
+      </v-list-tile>
 
-        </v-list-tile>
+      <v-divider :inset="true" :key="publisher.id + '-divider'"></v-divider>
 
-        <v-divider :inset="true" :key="publisher.id + '-divider'"></v-divider>
-
-      </template>
-    </v-list>
+    </template>
+  </v-list>
 
 </template>
 
 <script>
-import VLazyImage from "v-lazy-image";
+import VLazyImage from 'v-lazy-image';
 import { getAllPublishers } from '@/news-service';
 
 export default {
   data: () => ({
     publishers: [],
-    showSpinner: true
+    showSpinner: true,
+    search: '',
   }),
+
+  computed: {
+    filteredPublishers() {
+      let result = this.publishers;
+
+      if (this.search) {
+        result = this.publishers.filter(
+          p => p.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+        );
+      }
+
+      return result;
+    },
+  },
 
   methods: {
     async getPublishers() {
       this.showSpinner = true;
       this.publishers = await getAllPublishers();
       this.showSpinner = false;
-    }
+    },
   },
 
   created() {
@@ -66,7 +81,7 @@ export default {
         id: 'abc-news',
         language: 'en',
         name: 'ABC News',
-        url: 'https://abcnews.go.com'
+        url: 'https://abcnews.go.com',
       },
       {
         category: 'general',
@@ -76,7 +91,7 @@ export default {
         id: 'abc-news-au',
         language: 'en',
         name: 'ABC News (AU)',
-        url: 'http://www.abc.net.au/news'
+        url: 'http://www.abc.net.au/news',
       },
       {
         category: 'general',
@@ -86,7 +101,7 @@ export default {
         id: 'aftenposten',
         language: 'no',
         name: 'Aftenposten',
-        url: 'https://www.aftenposten.no'
+        url: 'https://www.aftenposten.no',
       },
       {
         category: 'general',
@@ -96,7 +111,7 @@ export default {
         id: 'al-jazeera-english',
         language: 'en',
         name: 'Al Jazeera English',
-        url: 'http://www.aljazeera.com'
+        url: 'http://www.aljazeera.com',
       },
       {
         category: 'general',
@@ -106,7 +121,7 @@ export default {
         id: 'ansa',
         language: 'it',
         name: 'ANSA.it',
-        url: 'http://www.ansa.it'
+        url: 'http://www.ansa.it',
       },
       {
         category: 'business',
@@ -116,7 +131,7 @@ export default {
         id: 'argaam',
         language: 'ar',
         name: 'Argaam',
-        url: 'http://www.argaam.com'
+        url: 'http://www.argaam.com',
       },
       {
         category: 'technology',
@@ -126,14 +141,14 @@ export default {
         id: 'ars-technica',
         language: 'en',
         name: 'Ars Technica',
-        url: 'http://arstechnica.com'
-      }
+        url: 'http://arstechnica.com',
+      },
     ];
 
     this.publishers = this.getPublishers();
   },
   components: {
-    VLazyImage
-  }
+    VLazyImage,
+  },
 };
 </script>
