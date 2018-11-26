@@ -5,7 +5,7 @@
 				<v-layout row class="pb-3">
 					<v-flex xs7>
 						<v-avatar size="20px" class="mr-1">
-							<v-img crossorigin="anonymous" :src="avatarUrl"></v-img>
+							<v-lazy-image :src="avatarUrl"></v-lazy-image>
 						</v-avatar>
 						<span class="caption">{{ article.publisherName }}</span>
 					</v-flex>
@@ -22,7 +22,7 @@
 						</v-card-title>
 					</v-flex>
 					<v-flex xs4>
-						<v-img crossorigin="anonymous" :src="imageUrl" height="90px" width="100%"></v-img>
+						<v-lazy-image class="article-image" :src="imageUrl" ></v-lazy-image>
 					</v-flex>
 				</v-layout>
 			</div>
@@ -52,7 +52,8 @@
 </template>
 
 <script>
-import { distanceInWordsToNow } from 'date-fns';
+import VLazyImage from 'v-lazy-image';
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 export default {
   props: {
@@ -69,16 +70,24 @@ export default {
     avatarUrl() {
       return `https://icon-locator.herokuapp.com/icon?url=${
         this.article.publisherUrl
-      }&amp;size=50..80..100`;
+      }&amp;size=30..70..100`;
     },
     imageUrl() {
       return this.article.urlToImage != null ? this.article.urlToImage : this.avatarUrl;
     }
+  },
+  components: {
+    VLazyImage
   }
 };
 </script>
 
 <style>
+article-image {
+  height: 90px;
+  width: 100%;
+}
+
 img {
   max-width: 100%;
 }

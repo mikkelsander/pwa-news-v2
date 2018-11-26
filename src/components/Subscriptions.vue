@@ -15,7 +15,7 @@
 
 				<v-list-tile :key="subscription.publisherId + '-item'" avatar>
 					<v-list-tile-avatar>
-						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${subscription.publisherUrl}&amp;size=70..120..200`"></v-img>
+						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${subscription.publisherUrl}&amp;size=30..70..100`"></v-img>
 					</v-list-tile-avatar>
 
 					<v-list-tile-content>
@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import VLazyImage from 'v-lazy-image';
+
 export default {
   data: () => ({
     showSnackbar: false,
@@ -66,6 +68,9 @@ export default {
       this.showSnackbar = true;
       this.snackbarMessage = `You are no longer subscribed to ${subscription.publisherName}`;
     }
+  },
+  components: {
+    VLazyImage
   }
 };
 </script>
