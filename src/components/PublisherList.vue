@@ -5,7 +5,7 @@
       <v-text-field class="mx-3 mt-3" label="Not working" prepend-inner-icon="search" solo></v-text-field>
 
       <v-subheader>
-        Showing {{ publishers.length }} publishers
+        Showing {{ publisherCount }} publishers
       </v-subheader>
 
       <div class="text-xs-center mt-5" v-if="showSpinner">
@@ -39,96 +39,33 @@
 </template>
 
 <script>
-import { getAllPublishers } from '@/news-service';
+import { fetchPublishers } from '@/api-service';
 
 export default {
   data: () => ({
     publishers: [],
+    publisherCount: 0,
     showSpinner: true
   }),
 
   methods: {
     async getPublishers() {
       this.showSpinner = true;
-      this.publishers = await getAllPublishers();
-      this.showSpinner = false;
+
+      try {
+        const response = await fetchPublishers();
+        this.publishers = response.publishers;
+        this.publisherCount = response.count;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.showSpinner = false;
+      }
     }
   },
 
   created() {
-    const mockPublishers = [
-      {
-        category: 'general',
-        country: 'us',
-        description:
-          'This is a description. Lorem Ipsum I need this text to be longer, so i looks better. Mikkel is a sexy motherfucker',
-        id: 'abc-news',
-        language: 'en',
-        name: 'ABC News',
-        url: 'https://abcnews.go.com'
-      },
-      {
-        category: 'general',
-        country: 'au',
-        description:
-          "Australia's most trusted source of local, national and world news. Comprehensive, independent, in-depth analysis, the latest business, sport, weather and more.",
-        id: 'abc-news-au',
-        language: 'en',
-        name: 'ABC News (AU)',
-        url: 'http://www.abc.net.au/news'
-      },
-      {
-        category: 'general',
-        country: 'no',
-        description:
-          'Norges ledende nettavis med alltid oppdaterte nyheter innenfor innenriks, utenriks, sport og kultur.',
-        id: 'aftenposten',
-        language: 'no',
-        name: 'Aftenposten',
-        url: 'https://www.aftenposten.no'
-      },
-      {
-        category: 'general',
-        country: 'us',
-        description:
-          'News, analysis from the Middle East and worldwide, multimedia and interactives, opinions, documentaries, podcasts, long reads and broadcast schedule.',
-        id: 'al-jazeera-english',
-        language: 'en',
-        name: 'Al Jazeera English',
-        url: 'http://www.aljazeera.com'
-      },
-      {
-        category: 'general',
-        country: 'it',
-        description:
-          'Agenzia ANSA: ultime notizie, foto, video e approfondimenti su: cronaca, politica, economia, regioni, mondo, sport, calcio, cultura e tecnologia.',
-        id: 'ansa',
-        language: 'it',
-        name: 'ANSA.it',
-        url: 'http://www.ansa.it'
-      },
-      {
-        category: 'business',
-        country: 'sa',
-        description:
-          'ارقام موقع متخصص في متابعة سوق الأسهم السعودي تداول - تاسي - مع تغطيه معمقة لشركات واسعار ومنتجات البتروكيماويات , تقارير مالية الاكتتابات الجديده ',
-        id: 'argaam',
-        language: 'ar',
-        name: 'Argaam',
-        url: 'http://www.argaam.com'
-      },
-      {
-        category: 'technology',
-        country: 'us',
-        description:
-          "The PC enthusiast's resource. Power users and the tools they love, without computing religion.",
-        id: 'ars-technica',
-        language: 'en',
-        name: 'Ars Technica',
-        url: 'http://arstechnica.com'
-      }
-    ];
-
+    console.log('created');
     this.publishers = this.getPublishers();
   }
 };

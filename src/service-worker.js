@@ -5,6 +5,12 @@ workbox.core.setCacheNameDetails({
     runtime: 'runtime-cache'
 });
 
+workbox.setConfig({
+    debug: false
+});
+
+workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
+
 workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
 
 
@@ -44,7 +50,7 @@ workbox.routing.registerRoute(
 
 workbox.routing.registerRoute(
     new RegExp('https://newsapi.org/v2/top-headlines?(.*)'),
-    workbox.strategies.staleWhileRevalidate({
+    workbox.strategies.networkFirst({
         cacheName: 'articles',
         plugins: [
             new workbox.expiration.Plugin({
@@ -59,7 +65,7 @@ workbox.routing.registerRoute(
 
 workbox.routing.registerRoute(
     /.+\.(?:png|gif|jpg|jpeg|svg)$/,
-    workbox.strategies.staleWhileRevalidate({
+    workbox.strategies.networkFirst({
         cacheName: 'images',
         plugins: [
             new workbox.expiration.Plugin({

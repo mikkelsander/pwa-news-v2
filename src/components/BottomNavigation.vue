@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     subscriptionsBadge() {
-      return this.$store.state.badges.subscriptions;
+      return this.$store.state.badges.newSubscriptionCount;
     }
   },
   methods: {

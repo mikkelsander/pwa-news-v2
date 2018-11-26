@@ -5,6 +5,7 @@ import {
 
 export async function getAllPublishers() {
     const res = await fetch(`https://newsapi.org/v2/sources?apiKey=${newsApiKey}`)
+    console.log(res)
     const json = await res.json();
     return json.sources;
 }

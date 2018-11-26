@@ -8,65 +8,32 @@
 		<v-list two-line>
 
 			<v-subheader>
-				Publishers ({{ publishers.length }})
+				Publishers ({{ subscriptions.length }})
 			</v-subheader>
 
-			<template v-for="publisher in publishers">
+			<template v-for="subscription in subscriptions">
 
-				<v-list-tile :key="publisher.id + '-item'" avatar>
+				<v-list-tile :key="subscription.publisherId + '-item'" avatar>
 					<v-list-tile-avatar>
-						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=70..120..200`"></v-img>
+						<v-img crossorigin="anonymous" :src="`https://icon-locator.herokuapp.com/icon?url=${subscription.publisherUrl}&amp;size=70..120..200`"></v-img>
 					</v-list-tile-avatar>
 
 					<v-list-tile-content>
-						<v-list-tile-title v-html="publisher.name"></v-list-tile-title>
-						<v-list-tile-sub-title> {{publisher.category}} </v-list-tile-sub-title>
+						<v-list-tile-title v-html="subscription.publisherName"></v-list-tile-title>
+						<v-list-tile-sub-title> {{subscription.publisherCategory}} </v-list-tile-sub-title>
 					</v-list-tile-content>
 
 
 					<v-list-tile-action>
-						<v-btn icon ripple @click="unsubscribe(publisher)">
+						<v-btn icon ripple @click="unsubscribe(subscription)">
 							<v-icon color="grey lighten-1">clear</v-icon>
 						</v-btn>
 					</v-list-tile-action>
 
 				</v-list-tile>
 
-				<v-divider :inset="true" :key="publisher.id + '-divider'"></v-divider>
+				<v-divider :inset="true" :key="subscription.publisherId + '-divider'"></v-divider>
 
-			</template>
-
-
-			<v-subheader class="mt-4">
-				Countries ({{ countries.length }})
-			</v-subheader>
-
-			<template v-for="country in countries">
-
-
-				<v-list-tile :key="country.name + '-item'" avatar>
-					<v-list-tile-avatar>
-						<v-img :src="require(`../assets/countries/flags/${country.code.toLowerCase()}.svg`)"></v-img>
-					</v-list-tile-avatar>
-
-
-					<v-list-tile-content>
-						<v-list-tile-title v-html="country.name"></v-list-tile-title>
-						<v-list-tile-sub-title> <strong>Weekly</strong> </v-list-tile-sub-title>
-						<v-list-tile-sub-title> General, Sports, Science, Technology,´Health, Politics, History </v-list-tile-sub-title>
-
-					</v-list-tile-content>
-
-
-					<v-list-tile-action>
-						<v-btn icon ripple>
-							<v-icon color="grey lighten-1">edit</v-icon>
-						</v-btn>
-					</v-list-tile-action>
-
-
-				</v-list-tile>
-				<v-divider :inset="true" :key="country.name + '-divider'"></v-divider>
 			</template>
 
 		</v-list>
@@ -87,22 +54,17 @@ export default {
   }),
 
   computed: {
-    publishers() {
-      console.log('getting pub subs');
-      return this.$store.getters.publisherSubscriptions;
-    },
-    countries() {
-      console.log('getting country subs');
-      return this.$store.getters.countrySubscriptions;
+    subscriptions() {
+      return this.$store.getters.subscriptions;
     }
   },
 
   methods: {
-    unsubscribe(publisher) {
-      console.log('unsubscribing ' + publisher.name);
-      this.$store.dispatch('deletePublisherSubscription', publisher);
+    unsubscribe(subscription) {
+      console.log('unsubscribing ' + subscription.publisherName);
+      this.$store.dispatch('removeSubscription', subscription.publisherId);
       this.showSnackbar = true;
-      this.snackbarMessage = `You are no longer subscribed to ${publisher.name}`;
+      this.snackbarMessage = `You are no longer subscribed to ${subscription.publisherName}`;
     }
   }
 };

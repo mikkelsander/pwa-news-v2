@@ -115,6 +115,7 @@ export default {
   methods: {
     subscribe() {
       console.log('subscribing to ' + this.publisher.name);
+      console.log(publisher)
       this.$store.dispatch('addPublisherSubscription', this.publisher);
       this.showSnackbar = true;
     }

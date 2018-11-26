@@ -7,7 +7,7 @@
 						<v-avatar size="20px" class="mr-1">
 							<v-img crossorigin="anonymous" :src="avatarUrl"></v-img>
 						</v-avatar>
-						<span class="caption">{{ article.source.name }}</span>
+						<span class="caption">{{ article.publisherName }}</span>
 					</v-flex>
 					<v-flex xs5>
 						<div class="timestamp">{{ distanceInWordsToNow(new Date(article.publishedAt)) }} ago</div>
@@ -67,8 +67,9 @@ export default {
   }),
   computed: {
     avatarUrl() {
-      const url = this.$store.getters.publisherUrl(this.article.source.name).url;
-      return `https://icon-locator.herokuapp.com/icon?url=${url}&amp;size=50..80..100`;
+      return `https://icon-locator.herokuapp.com/icon?url=${
+        this.article.publisherUrl
+      }&amp;size=50..80..100`;
     },
     imageUrl() {
       return this.article.urlToImage != null ? this.article.urlToImage : this.avatarUrl;

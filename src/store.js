@@ -1,101 +1,228 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import IndexDbService from '@/idb-service';
+import {
+  authenticate,
+  deleteUser,
+  createUser,
+  fetchSubscriptions,
+  createSubscription,
+  deleteSubscription
+} from '@/api-service';
 
-const subscriptionStore = 'subscriptions';
 const IDBService = new IndexDbService();
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    subscriptions: {
-      countries: [],
-      publishers: []
+    user: {
+      id: '',
+      authenticationToken: '',
     },
+    subscriptions: [],
+    publishers: [],
     badges: {
-      subscriptions: 0
+      newSubsCount: 0
     },
     loadingState: true
   },
+
   getters: {
-    countrySubscriptions: state => {
-      return state.subscriptions.countries.sort(country => country.name);
+    subscriptions: state => {
+      if (state.subscriptions.length == 0) return;
+      return state.subscriptions.sort(sub => sub.publisherName);
     },
-
-    publisherSubscriptions: state => {
-      return state.subscriptions.publishers.sort(publisher => publisher.name);
-    },
-
-    publisherUrl: state => name => {
-      return state.subscriptions.publishers.find(publisher => publisher.name === name);
-    }
   },
 
   mutations: {
-
     setLoadingState(state, loadingState) {
       state.loadingState = loadingState;
     },
 
-    updatePublisherSubscriptions(state, publishers) {
-      Vue.set(state.subscriptions, 'publishers', publishers);
+    setAuthenticationToken(state, token) {
+      state.user.authenticationToken = token;
+    },
+
+    setUserId(state, id) {
+      state.user.id = id;
+    },
+
+    setPublishers(state, publishers) {
+      Vue.set(state, 'publishers', publishers);
+    },
+
+    setSubscriptions(state, subscriptions) {
+      Vue.set(state, 'subscriptions', subscriptions);
     },
 
     incrementSubscriptionsBadge(state) {
-      state.badges.subscriptions++;
+      state.badges.newSubsCount++;
     },
 
     resetSubscriptionsBadge(state) {
-      state.badges.subscriptions = 0;
+      state.badges.newSubsCount = 0;
     }
   },
 
   actions: {
-    setInitialState({
-      commit
+    async setInitialState({
+      commit,
+      state,
+      dispatch
     }) {
-
+      console.log("SETTING INITIAL STATE")
       commit('setLoadingState', true);
 
       IDBService.openConnection();
 
-      IDBService.getAllItemsFromStore(subscriptionStore).then(subscriptions => {
-        commit('updatePublisherSubscriptions', subscriptions);
+      console.log("getting credentials from IDB", credentials)
+      var credentials = await IDBService.getAllItemsFromStore(IDBService.CREDENTIALS_STORE);
+
+      try {
+        await dispatch('authenticateUser', credentials[0]);
+        console.log("user", state.user)
+
+        await dispatch("getSubscriptions", state.user.authenticationToken);
+        console.log("subs", state.subscriptions)
+
+      } catch (error) {
+        console.log(error)
+
+      } finally {
         commit('setLoadingState', false);
-      });
+      }
     },
 
-    addPublisherSubscription({
+    async updateLocalStateUser({
       commit,
-      state
-    }, subscription) {
-      let copy = [...state.subscriptions.publishers];
-      const alreadySubscribed = copy.find(oldSub => oldSub.id === subscription.id); //undefined if not found
+    }, user) {
 
-      if (alreadySubscribed) return;
+      try {
+        await IDBService.clearStore(IDBService.USER_STORE);
+        await IDBService.addItemToStore(user, IDBService.USER_STORE);
+        commit('setAuthenticationToken', user.authenticationToken);
+        commit('setUserId', user.id);
 
-      copy.push(subscription);
-      commit('updatePublisherSubscriptions', copy);
-      commit('incrementSubscriptionsBadge');
-
-      IDBService.addItemToStore(subscription, subscriptionStore);
+      } catch (error) {
+        console.log(error)
+      }
     },
 
-    deletePublisherSubscription({
+    async authenticateUser({
+      dispatch,
+    }, credentials) {
+
+      try {
+        const user = await authenticate(credentials.username, credentials.password);
+
+        //save and keep only the last used credentials in indexed db.
+        await IDBService.clearStore(IDBService.CREDENTIALS_STORE);
+        await IDBService.addItemToStore(credentials, IDBService.CREDENTIALS_STORE);
+
+        await dispatch("updateLocalStateUser", user)
+
+      } catch (error) {
+        throw Error(error)
+      }
+    },
+
+    async createUser({
+      dispatch,
+    }, credentials) {
+      try {
+
+        await createUser(credentials.username, credentials.password);
+        await dispatch("authenticateUser", credentials)
+
+      } catch (error) {
+        console.log("error", error)
+      }
+    },
+
+    async deleteUser({
       commit,
       state
-    }, subscription) {
-      let copy = [...state.subscriptions.publishers];
-      const notSubscribed = !copy.includes(subscription);
+    }) {
+      try {
 
-      if (notSubscribed) return;
+        await deleteUser(state.user.authenticationToken);
 
-      const index = copy.indexOf(subscription);
-      copy.splice(index, 1);
-      commit('updatePublisherSubscriptions', copy);
+        IDBService.clearStore(IDBService.USER_STORE);
+        commit('setAuthenticationToken', '');
+        commit('setUserId', '');
 
-      IDBService.deleteItemFromStore(subscription.id, subscriptionStore);
+      } catch (error) {
+        console.log("error", error)
+      }
+    },
+
+    async getSubscriptions({
+      state,
+      dispatch
+    }) {
+      try {
+
+        const subscriptions = (await fetchSubscriptions(state.user.authenticationToken)).subscriptions;
+
+        await IDBService.clearStore(IDBService.SUBSCRIPTIONS_STORE);
+
+        for (let subscription of subscriptions) {
+          await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE);
+        }
+
+        await dispatch("syncLocalSubscriptionsState");
+
+      } catch (error) {
+        throw Error(error)
+      }
+    },
+
+    async addSubscription({
+      state,
+      dispatch
+    }, publisherId) {
+
+      // if subscription is already in the index DB below calls will throw errors
+      try {
+        const subscription = await createSubscription(publisherId, state.user.authenticationToken);
+        await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE);
+        await dispatch("syncLocalSubscriptionsState");
+
+      } catch (error) {
+        console.log("error", error)
+      }
+    },
+
+    async removeSubscription({
+      state,
+      dispatch
+    }, publisherId) {
+
+      const subscription = await IDBService.getItemFromStore(publisherId, IDBService.SUBSCRIPTIONS_STORE);
+
+      // if subscription is not in the index DB below calls will throw errors
+      try {
+
+        await deleteSubscription(subscription.publisherId, state.user.authenticationToken);
+        await IDBService.deleteItemFromStore(subscription.publisherId, IDBService.SUBSCRIPTIONS_STORE);
+        await dispatch("syncLocalSubscriptionsState");
+
+      } catch (error) {
+        console.log("error", error)
+      }
+    },
+
+    async syncLocalSubscriptionsState({
+      commit,
+    }) {
+      try {
+        const subscriptions = await IDBService.getAllItemsFromStore(IDBService.SUBSCRIPTIONS_STORE);
+        console.log("syncing subscriptions", subscriptions);
+        commit("setSubscriptions", subscriptions)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 });

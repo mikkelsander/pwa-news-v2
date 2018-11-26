@@ -19,12 +19,11 @@
     </v-toolbar>
 
     <v-content>
-      <router-view v-if="!isLoading" />
-
+      <keep-alive>
+        <router-view v-if="!isLoading" />
+      </keep-alive>
     </v-content>
-
-
-
+    
     <bottom-navigation></bottom-navigation>
   </v-app>
 </template>

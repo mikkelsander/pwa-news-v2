@@ -4,9 +4,11 @@ import idb from 'idb';
 export default class {
 
 	constructor() {
-		this.dbName = 'pwa-news';
-		this.dbVersion = 1;
-		this.subscriptionStore = 'subscriptions';
+		this.DB_NAME = 'pwa-news';
+		this.DB_VERSION = 2;
+		this.SUBSCRIPTIONS_STORE = 'subscriptions';
+		this.USER_STORE = 'user'
+		this.CREDENTIALS_STORE = 'credentials'
 		this.dbConnection = null;
 	}
 
@@ -19,11 +21,19 @@ export default class {
 
 	openConnection() {
 		if (!this.isSupported()) return;
-		this.dbConnection = idb.open(this.dbName, this.dbVersion, upgradeDb => {
+		this.dbConnection = idb.open(this.DB_NAME, this.DB_VERSION, upgradeDb => {
 			switch (upgradeDb.oldVersion) {
 				case 0:
-					upgradeDb.createObjectStore(this.subscriptionStore, {
+					upgradeDb.createObjectStore(this.SUBSCRIPTIONS_STORE, {
+						keyPath: 'publisherId'
+					});
+				case 1:
+					upgradeDb.createObjectStore(this.USER_STORE, {
 						keyPath: 'id'
+					});
+				case 2:
+					upgradeDb.createObjectStore(this.CREDENTIALS_STORE, {
+						keyPath: 'username'
 					});
 			}
 		});
@@ -40,12 +50,12 @@ export default class {
 			.catch('Something went wrong when adding item')
 	}
 
-	getItemFromStore(item, storeName) {
+	getItemFromStore(itemPK, storeName) {
 		if (!this.isSupported()) return;
 		return this.dbConnection.then(db => {
 			const tx = db.transaction(storeName, 'readonly');
 			const store = tx.objectStore(storeName);
-			return store.get(item);
+			return store.get(itemPK);
 		});
 	}
 
@@ -74,6 +84,16 @@ export default class {
 			const tx = db.transaction(storeName, 'readwrite');
 			const store = tx.objectStore(storeName);
 			store.delete(itemPK);
+			return tx.complete;
+		});
+	}
+
+	clearStore(storeName) {
+		if (!this.isSupported()) return;
+		return this.dbConnection.then(db => {
+			const tx = db.transaction(storeName, 'readwrite');
+			const store = tx.objectStore(storeName);
+			store.clear();
 			return tx.complete;
 		});
 	}
