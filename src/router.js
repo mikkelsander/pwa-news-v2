@@ -3,7 +3,7 @@ import Router from "vue-router";
 import Feed from './components/Feed.vue'
 import Discover from './components/Discover.vue';
 import Publisher from './components/Publisher.vue';
-import Subscriptions from './components/Subscriptions.vue'
+import Account from './components/Account.vue';
 
 Vue.use(Router);
 
@@ -23,9 +23,9 @@ export default new Router({
       component: Discover
     },
     {
-      path: "/subscriptions",
-      name: "subscriptions",
-      component: Subscriptions
+      path: "/account",
+      name: "account",
+      component: Account
     },
     {
       path: "/publisher/:id",

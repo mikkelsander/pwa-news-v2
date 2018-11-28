@@ -1,5 +1,6 @@
 'use strict';
 
+// const baseUrl = 'https://pwa-news-api.azurewebsites.net/api';
 const baseUrl = 'https://localhost:44355/api';
 
 export async function authenticate(username, password) {
@@ -38,9 +39,9 @@ export async function fetchPublisher(id) {
 	return await response.json();
 }
 
-export async function fetchArticles(authToken) {
-	console.log("fetching articles");
-	const response = await fetch(`${baseUrl}/articles`, {
+export async function fetchArticles(authToken, from = "", offset = 0, size = 10) {
+	console.log("fetching articles. from: " + from + " Offset: " + offset + " Size: " + size );
+	const response = await fetch(`${baseUrl}/articles?from=${from}&offset=${offset}&size=${size}`, {
 		headers: {
 			'Authorization': `Bearer ${authToken}`,
 		},

@@ -1,12 +1,11 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-
 module.exports = {
     configureWebpack: {
         plugins: [
-          new BundleAnalyzerPlugin()
+            new BundleAnalyzerPlugin()
         ]
-      },
+    },
     pwa: {
         workboxPluginMode: 'InjectManifest',
         workboxOptions: {

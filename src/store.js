@@ -18,38 +18,41 @@ export default new Vuex.Store({
   state: {
     user: {
       id: '',
+      username: '',
       authenticationToken: '',
     },
     subscriptions: [],
-    publishers: [],
     badges: {
-      newSubsCount: 0
+      newSubscriptionsCount: 0
     },
+    authenticated: false,
     loadingState: true
   },
 
   getters: {
     subscriptions: state => {
-      if (state.subscriptions.length == 0) return;
+      if (state.subscriptions == undefined) return [];
       return state.subscriptions.sort(sub => sub.publisherName);
     },
   },
 
   mutations: {
-    setLoadingState(state, loadingState) {
-      state.loadingState = loadingState;
+    setAuthenticated(state, bool) {
+      state.authenticated = bool
     },
 
-    setAuthenticationToken(state, token) {
-      state.user.authenticationToken = token;
+    setLoadingState(state, bool) {
+      state.loadingState = bool;
     },
 
-    setUserId(state, id) {
-      state.user.id = id;
+    setUser(state, user) {
+      state.user = user;
     },
 
-    setPublishers(state, publishers) {
-      Vue.set(state, 'publishers', publishers);
+    resetUser(state) {
+      state.user.id = '',
+        state.user.username = '',
+        state.user.authenticationToken = ''
     },
 
     setSubscriptions(state, subscriptions) {
@@ -57,11 +60,11 @@ export default new Vuex.Store({
     },
 
     incrementSubscriptionsBadge(state) {
-      state.badges.newSubsCount++;
+      state.badges.newSubscriptionsCount++;
     },
 
     resetSubscriptionsBadge(state) {
-      state.badges.newSubsCount = 0;
+      state.badges.newSubscriptionsCount = 0;
     }
   },
 
@@ -94,15 +97,14 @@ export default new Vuex.Store({
       }
     },
 
-    async updateLocalStateUser({
+    async updateLocalUserState({
       commit,
     }, user) {
 
       try {
         await IDBService.clearStore(IDBService.USER_STORE);
         await IDBService.addItemToStore(user, IDBService.USER_STORE);
-        commit('setAuthenticationToken', user.authenticationToken);
-        commit('setUserId', user.id);
+        commit('setUser', user);
 
       } catch (error) {
         console.log(error)
@@ -110,6 +112,7 @@ export default new Vuex.Store({
     },
 
     async authenticateUser({
+      commit,
       dispatch,
     }, credentials) {
 
@@ -119,11 +122,28 @@ export default new Vuex.Store({
         //save and keep only the last used credentials in indexed db.
         await IDBService.clearStore(IDBService.CREDENTIALS_STORE);
         await IDBService.addItemToStore(credentials, IDBService.CREDENTIALS_STORE);
-
-        await dispatch("updateLocalStateUser", user)
+        await dispatch("updateLocalUserState", user)
+        commit('setAuthenticated', true);
+        await dispatch('getSubscriptions')
 
       } catch (error) {
         throw Error(error)
+      }
+    },
+
+    async signOutUser({
+      commit,
+    }) {
+      try {
+        await IDBService.clearStore(IDBService.CREDENTIALS_STORE);
+        await IDBService.clearStore(IDBService.USER_STORE);
+        await IDBService.clearStore(IDBService.SUBSCRIPTIONS_STORE);
+        commit("resetUser");
+        commit("setSubscriptions", []);
+        commit("setAuthenticated", false)
+        commit("resetSubscriptionsBadge");
+      } catch (error) {
+        console.log(error)
       }
     },
 
@@ -180,6 +200,7 @@ export default new Vuex.Store({
 
     async addSubscription({
       state,
+      commit,
       dispatch
     }, publisherId) {
 
@@ -188,6 +209,7 @@ export default new Vuex.Store({
         const subscription = await createSubscription(publisherId, state.user.authenticationToken);
         await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE);
         await dispatch("syncLocalSubscriptionsState");
+        commit("incrementSubscriptionsBadge");
 
       } catch (error) {
         console.log("error", error)
