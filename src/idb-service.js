@@ -5,10 +5,9 @@ export default class {
 
 	constructor() {
 		this.DB_NAME = 'pwa-news';
-		this.DB_VERSION = 2;
-		this.SUBSCRIPTIONS_STORE = 'subscriptions';
+		this.DB_VERSION = 1;
+		// this.SUBSCRIPTIONS_STORE = 'subscriptions';
 		this.USER_STORE = 'user'
-		this.CREDENTIALS_STORE = 'credentials'
 		this.dbConnection = null;
 	}
 
@@ -24,17 +23,13 @@ export default class {
 		this.dbConnection = idb.open(this.DB_NAME, this.DB_VERSION, upgradeDb => {
 			switch (upgradeDb.oldVersion) {
 				case 0:
-					upgradeDb.createObjectStore(this.SUBSCRIPTIONS_STORE, {
-						keyPath: 'publisherId'
-					});
-				case 1:
-					upgradeDb.createObjectStore(this.USER_STORE, {
-						keyPath: 'id'
-					});
-				case 2:
-					upgradeDb.createObjectStore(this.CREDENTIALS_STORE, {
-						keyPath: 'username'
-					});
+				upgradeDb.createObjectStore(this.USER_STORE, {
+					keyPath: 'id'
+				});
+				// case 1:
+				// 	upgradeDb.createObjectStore(this.SUBSCRIPTIONS_STORE, {
+				// 		keyPath: 'publisherId'
+				// 	});
 			}
 		});
 	}
@@ -46,8 +41,7 @@ export default class {
 				const store = tx.objectStore(storeName);
 				store.add(item);
 				return tx.complete;
-			}).then(console.log('added item to store'))
-			.catch('Something went wrong when adding item')
+			});
 	}
 
 	getItemFromStore(itemPK, storeName) {

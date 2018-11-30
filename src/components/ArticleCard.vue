@@ -5,7 +5,12 @@
 				<v-layout row class="pb-3">
 					<v-flex xs7>
 						<v-avatar size="20px" class="mr-1">
-							<v-lazy-image :src="avatarUrl"></v-lazy-image>
+							<vue-clazy-load :src="avatarUrl">
+								<img :src="avatarUrl">
+								<div class="preloader" slot="placeholder">
+									<v-progress-circular :size="10" :width="1" color="indigo" indeterminate></v-progress-circular>
+								</div>
+							</vue-clazy-load>
 						</v-avatar>
 						<span class="caption">{{ article.publisherName }}</span>
 					</v-flex>
@@ -22,7 +27,12 @@
 						</v-card-title>
 					</v-flex>
 					<v-flex xs4>
-						<v-lazy-image class="article-image" :src="imageUrl" ></v-lazy-image>
+						<vue-clazy-load :src="imageUrl">
+								<img :src="imageUrl">
+								<div class="preloader" slot="placeholder">
+									<v-progress-circular :size="20" :width="2" color="indigo" indeterminate></v-progress-circular>
+								</div>
+						</vue-clazy-load>
 					</v-flex>
 				</v-layout>
 			</div>
@@ -32,14 +42,14 @@
 					<v-flex>
 						<v-divider light></v-divider>
 						<v-card-actions v-show="expand">
+							<v-spacer></v-spacer>
 							<span class="caption">Full article</span>
 							<v-btn icon :href="article.url">
-								<v-icon>link</v-icon>
+								<v-icon color="">link</v-icon>
 							</v-btn>
-							<v-spacer></v-spacer>
-							<span class="caption">Listen</span>
-							<v-btn icon>
-								<v-icon>play_circle_outline</v-icon>
+							<span class="caption ml-2">Add to list</span>
+							<v-btn disabled icon>
+								<v-icon color="grey">playlist_add</v-icon>
 							</v-btn>
 						</v-card-actions>
 					</v-flex>
@@ -52,7 +62,7 @@
 </template>
 
 <script>
-import VLazyImage from 'v-lazy-image';
+  import { VueClazyLoad } from 'vue-clazy-load'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 export default {
@@ -77,7 +87,7 @@ export default {
     }
   },
   components: {
-    VLazyImage
+		VueClazyLoad
   }
 };
 </script>

@@ -51,8 +51,8 @@ export default new Vuex.Store({
 
     resetUser(state) {
       state.user.id = '',
-        state.user.username = '',
-        state.user.authenticationToken = ''
+      state.user.username = '',
+      state.user.authenticationToken = ''
     },
 
     setSubscriptions(state, subscriptions) {
@@ -74,40 +74,31 @@ export default new Vuex.Store({
       state,
       dispatch
     }) {
+
       console.log("SETTING INITIAL STATE")
       commit('setLoadingState', true);
 
       IDBService.openConnection();
+      var user = await IDBService.getAllItemsFromStore(IDBService.USER_STORE);
 
-      console.log("getting credentials from IDB", credentials)
-      var credentials = await IDBService.getAllItemsFromStore(IDBService.CREDENTIALS_STORE);
+      if(user[0] == undefined) {
+        commit('setLoadingState', false);
+        return; 
+      }
 
-      try {
-        await dispatch('authenticateUser', credentials[0]);
-        console.log("user", state.user)
-
+      commit('setUser', user[0]);
+      console.log("user", state.user)
+      commit('setAuthenticated', true);
+      
+      try {    
         await dispatch("getSubscriptions", state.user.authenticationToken);
         console.log("subs", state.subscriptions)
 
-      } catch (error) {
+      } catch (error) {    
         console.log(error)
-
+        
       } finally {
         commit('setLoadingState', false);
-      }
-    },
-
-    async updateLocalUserState({
-      commit,
-    }, user) {
-
-      try {
-        await IDBService.clearStore(IDBService.USER_STORE);
-        await IDBService.addItemToStore(user, IDBService.USER_STORE);
-        commit('setUser', user);
-
-      } catch (error) {
-        console.log(error)
       }
     },
 
@@ -119,25 +110,25 @@ export default new Vuex.Store({
       try {
         const user = await authenticate(credentials.username, credentials.password);
 
-        //save and keep only the last used credentials in indexed db.
-        await IDBService.clearStore(IDBService.CREDENTIALS_STORE);
-        await IDBService.addItemToStore(credentials, IDBService.CREDENTIALS_STORE);
-        await dispatch("updateLocalUserState", user)
+        await IDBService.clearStore(IDBService.USER_STORE);
+        await IDBService.addItemToStore(user, IDBService.USER_STORE);
+
+        commit('setUser', user);
         commit('setAuthenticated', true);
+
         await dispatch('getSubscriptions')
 
       } catch (error) {
-        throw Error(error)
+        console.log(error)
       }
     },
 
     async signOutUser({
       commit,
     }) {
+
       try {
-        await IDBService.clearStore(IDBService.CREDENTIALS_STORE);
         await IDBService.clearStore(IDBService.USER_STORE);
-        await IDBService.clearStore(IDBService.SUBSCRIPTIONS_STORE);
         commit("resetUser");
         commit("setSubscriptions", []);
         commit("setAuthenticated", false)
@@ -150,8 +141,8 @@ export default new Vuex.Store({
     async createUser({
       dispatch,
     }, credentials) {
-      try {
 
+      try {
         await createUser(credentials.username, credentials.password);
         await dispatch("authenticateUser", credentials)
 
@@ -161,17 +152,13 @@ export default new Vuex.Store({
     },
 
     async deleteUser({
-      commit,
+      dispatch,
       state
     }) {
       try {
-
         await deleteUser(state.user.authenticationToken);
-
-        IDBService.clearStore(IDBService.USER_STORE);
-        commit('setAuthenticationToken', '');
-        commit('setUserId', '');
-
+        dispatch("signOutUser")
+        
       } catch (error) {
         console.log("error", error)
       }
@@ -179,37 +166,34 @@ export default new Vuex.Store({
 
     async getSubscriptions({
       state,
-      dispatch
+      commit,
     }) {
+
       try {
-
         const subscriptions = (await fetchSubscriptions(state.user.authenticationToken)).subscriptions;
-
-        await IDBService.clearStore(IDBService.SUBSCRIPTIONS_STORE);
-
-        for (let subscription of subscriptions) {
-          await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE);
-        }
-
-        await dispatch("syncLocalSubscriptionsState");
+        commit("setSubscriptions", subscriptions);
 
       } catch (error) {
-        throw Error(error)
+        console.log(error)
       }
     },
 
     async addSubscription({
       state,
       commit,
-      dispatch
-    }, publisherId) {
+    }, subscription) {
 
-      // if subscription is already in the index DB below calls will throw errors
-      try {
-        const subscription = await createSubscription(publisherId, state.user.authenticationToken);
-        await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE);
-        await dispatch("syncLocalSubscriptionsState");
-        commit("incrementSubscriptionsBadge");
+      let copy = [...state.subscriptions];
+      
+      const subscriptionExists = copy.find(sub => sub.publisherId == subscription.publisherId);
+      if(subscriptionExists) return;
+
+      copy.push(subscription);
+      commit("setSubscriptions", copy)
+      commit("incrementSubscriptionsBadge");
+
+      try {      
+        await createSubscription(subscription.publisherId, state.user.authenticationToken);
 
       } catch (error) {
         console.log("error", error)
@@ -218,33 +202,26 @@ export default new Vuex.Store({
 
     async removeSubscription({
       state,
-      dispatch
+      commit,
     }, publisherId) {
 
-      const subscription = await IDBService.getItemFromStore(publisherId, IDBService.SUBSCRIPTIONS_STORE);
+      let copy = [...state.subscriptions];
 
-      // if subscription is not in the index DB below calls will throw errors
+      let subscription = copy.find(sub => sub.publisherId == publisherId);
+      if(subscription == undefined) return;
+      
+      let index = copy.indexOf(subscription);
+      copy.splice(index, 1);
+
+      commit("setSubscriptions", copy)
+
       try {
-
-        await deleteSubscription(subscription.publisherId, state.user.authenticationToken);
-        await IDBService.deleteItemFromStore(subscription.publisherId, IDBService.SUBSCRIPTIONS_STORE);
-        await dispatch("syncLocalSubscriptionsState");
+        await deleteSubscription(publisherId, state.user.authenticationToken);
 
       } catch (error) {
         console.log("error", error)
       }
     },
 
-    async syncLocalSubscriptionsState({
-      commit,
-    }) {
-      try {
-        const subscriptions = await IDBService.getAllItemsFromStore(IDBService.SUBSCRIPTIONS_STORE);
-        console.log("syncing subscriptions", subscriptions);
-        commit("setSubscriptions", subscriptions)
-      } catch (error) {
-        console.log(error)
-      }
-    }
   }
 });

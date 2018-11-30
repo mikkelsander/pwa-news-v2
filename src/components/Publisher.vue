@@ -9,7 +9,7 @@
             :src="`https://icon-locator.herokuapp.com/icon?url=${publisher.url}&amp;size=100..300..400`"
           ></v-img>
 
-          <v-btn id="fab" color="indigo" absolute fab bottom right :disabled="isSubscribed" @click="subscribe()">
+          <v-btn id="fab" color="indigo" absolute fab bottom right :class="{'green lighten-2': isSubscribed}" @click="subscribe()">
             <v-icon color="white" v-if="isSubscribed">check</v-icon>
             <v-icon color="white" v-else>add</v-icon>
           </v-btn>
@@ -88,8 +88,14 @@ export default {
 
   methods: {
     subscribe() {
+      if(this.isSubscribed) return;
       console.log("subscribing to " + this.publisher.name);
-      this.$store.dispatch("addSubscription", this.publisher.id);
+      const subscription = {
+        publisherId: this.publisher.id,
+        publisherName: this.publisher.name,
+        publisherCategory: this.publisherCategory
+      }
+      this.$store.dispatch("addSubscription", subscription);
       this.showSnackbar = true;
     }
   }
@@ -97,4 +103,5 @@ export default {
 </script>
 
 <style>
+
 </style>

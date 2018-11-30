@@ -1,13 +1,13 @@
 <template>
-  <v-app>
-    <v-toolbar color="indigo" app>
+  <v-app class="max-width">
+    <v-toolbar color="indigo" app class="max-width">
       <v-toolbar-title>
         <span style="color: white" class="headline">PWA News</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-toolbar-items v-if="showHomeScreenButton">
-        <v-btn flat small @click="addToHomeScreen()">Add to homescreen</v-btn>
+        <v-btn color="white" flat small @click="addToHomeScreen()">Add to homescreen</v-btn>
       </v-toolbar-items>
 
       <v-toolbar-items>
@@ -19,10 +19,12 @@
     </v-toolbar>
 
     <v-content>
-      <router-view v-if="!isLoading"/>
+      <keep-alive>
+        <router-view v-if="!isLoading"/>
+      </keep-alive>
     </v-content>
 
-    <v-bottom-nav class=".v-bottom-nav" app fixed :active.sync="bottomNav" :value="true">
+    <v-bottom-nav class=".v-bottom-nav max-width" app fixed :active.sync="bottomNav" :value="true">
       <v-btn color="indigo" flat value="Feed" to="/feed">
         <span>Feed</span>
         <v-icon>rss_feed</v-icon>
@@ -37,7 +39,7 @@
         <span>Account</span>
         <v-badge right color="red" :value="subscriptionsBadge > 0">
           <span slot="badge">{{ subscriptionsBadge }}</span>
-          <v-icon>person</v-icon>
+          <v-icon>settings</v-icon>
         </v-badge>
       </v-btn>
     </v-bottom-nav>
@@ -102,6 +104,10 @@ export default {
 </script>
 
 <style>
+.max-width {
+  max-width: 768px;
+}
+
 .v-badge__badge {
   font-size: 10px;
   height: 15px !important;

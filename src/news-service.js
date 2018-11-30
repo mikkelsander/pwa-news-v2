@@ -1,7 +1,5 @@
 'use strict';
-import {
-    newsApiKey
-} from '../secrets.js';
+const newsApiKey = "";
 
 export async function getAllPublishers() {
     const res = await fetch(`https://newsapi.org/v2/sources?apiKey=${newsApiKey}`)

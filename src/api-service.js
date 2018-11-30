@@ -1,7 +1,7 @@
 'use strict';
 
-// const baseUrl = 'https://pwa-news-api.azurewebsites.net/api';
-const baseUrl = 'https://localhost:44355/api';
+const baseUrl = 'https://pwa-news-api.azurewebsites.net/api';
+// const baseUrl = 'https://localhost:44355/api';
 
 export async function authenticate(username, password) {
 	console.log("authenticating user");

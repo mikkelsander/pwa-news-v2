@@ -1,97 +1,53 @@
 <template>
   <div>
-    <v-container class="px-0 py-0">
-      <v-layout column>
-        <v-card class="feed-toolbar py-2">
-          <v-layout row align-center>
-            <v-flex xs10>
-              <v-subheader class="ml-4 px-0">
-                <v-menu offset-y>
-                  <div slot="activator">
-                    <span class="subheading text--white">{{ selectedItem.display }}</span>
-                    <v-icon class="feed-icon pl-1">expand_more</v-icon>
-                  </div>
-                  <v-list>
-                    <v-list-tile v-for="item in menuItems" :key="item.id" @click="selectedItem = item">
-                      <v-list-tile-content>{{ item.display }}</v-list-tile-content>
-                    </v-list-tile>
-                  </v-list>
-                </v-menu>
-              </v-subheader>
-            </v-flex>
-            <!-- <v-flex xs-2>
-              <v-subheader class="mr-4 px-0">
-                <v-menu v-model="showCategoryMenu" :close-on-content-click="false" :nudge-width="200">
-                  <div slot="activator">
-                    <span class="subheading text--white">{{ selectedCategoryLabel }}</span>
-                    <v-icon class="feed-icon pl-2">sort</v-icon>
-                  </div>
+    <v-card class="feed-toolbar max-width">
+      <v-toolbar card color="white">
+        <v-spacer></v-spacer>
 
-                  <v-card>
-                    <v-card-title class="subheading">Filter by category</v-card-title>
-                    <v-divider></v-divider>
-
-                    <v-card-text>
-                      <v-container class="pa-0">
-                        <v-layout row>
-                          <v-flex xs12 class="pr-2">
-                            <v-layout column>
-                              <v-checkbox v-model="selectedCategory" label="Business" color="indigo" value="Business"
-                                hide-details></v-checkbox>
-                              <v-checkbox v-model="selectedCategory" label="Entertainment" color="indigo" value="Entertainment"
-                                hide-details></v-checkbox>
-                              <v-checkbox v-model="selectedCategory" label="Health" color="indigo" value="Health"
-                                hide-details></v-checkbox>
-                            </v-layout>
-                          </v-flex>
-                          <v-flex xs12>
-                            <v-layout column>
-                              <v-checkbox v-model="selectedCategory" label="Science" color="indigo" value="Science"
-                                hide-details></v-checkbox>
-                              <v-checkbox v-model="selectedCategory" label="Sports" color="indigo" value="Sports"
-                                hide-details></v-checkbox>
-                              <v-checkbox v-model="selectedCategory" label="Technology" color="indigo" value="Technology"
-                                hide-details></v-checkbox>
-                            </v-layout>
-                          </v-flex>
-                        </v-layout>
-                      </v-container>
-                    </v-card-text>
-
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn flat @click="showCategoryMenu = false, selectedCategory = 'Category' ">Clear</v-btn>
-                      <v-btn color="primary" flat @click="showCategoryMenu = false">Save</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-menu>
-              </v-subheader>
-            </v-flex> -->
-          </v-layout>
-        </v-card>
-      </v-layout>
-    </v-container>
-    <v-container class="mt-5 pt-4">
-      <v-layout column>
-        <v-subheader class="subheading">News feed</v-subheader>
-        <div class="text-xs-center mt-5" v-if="showSpinner">
-          <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
-        </div>
-        <div v-else>
-          <div>
-            <v-flex class="mb-2 mt-1" v-for="(article, index) in filteredList" :key="index">
-              <article-card :article="article"></article-card>
+        <v-subheader>
+          <v-menu offset-y>
+            <div slot="activator">
+              <span class="subheading">{{ selectedItem.display }}</span>
+              <v-icon class="feed-icon pl-1">expand_more</v-icon>
+            </div>
+            <v-list>
+              <v-list-tile v-for="item in menuItems" :key="item.id" @click="selectedItem = item">
+                <v-list-tile-content>{{ item.display }}</v-list-tile-content>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-subheader>
+        <!-- <v-spacer></v-spacer> -->
+        <!-- <v-toolbar-items>             
+            <v-btn icon disabled>
+              <span class="text-capitalize">more</span>
+              <v-icon color="grey">more_vert</v-icon>
+            </v-btn>     
+        </v-toolbar-items> -->
+      </v-toolbar>
+    </v-card>
+      <v-container class="pt-5">
+        <v-layout column>
+          <v-subheader class="subheading mt-3">News feed</v-subheader>
+          <div class="text-xs-center mt-5" v-if="showSpinner">
+            <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+          </div>
+          <div v-else>
+            <div>
+              <v-flex class="mb-2 mt-1" v-for="(article, index) in articles" :key="index">
+                <article-card :article="article"></article-card>
+              </v-flex>
+            </div>
+            <v-flex>
+              <p class="text-xs-center mt-5 subheading mx-2" v-if="subscriptions.length < 1">
+                You currently don't have any active subscriptions. Head over to the discover page and find your
+                favorite
+                publishers.
+              </p>
             </v-flex>
           </div>
-          <v-flex>
-            <p class="text-xs-center mt-5 subheading mx-2" v-if="subscriptions.length < 1">
-              You currently don't have any active subscriptions. Head over to the discover page and find your favorite
-              publishers.
-            </p>
-          </v-flex>
-        </div>
-      </v-layout>
-    </v-container>
+        </v-layout>
+      </v-container>
   </div>
 </template>
 
@@ -106,15 +62,13 @@
 
   export default {
     components: {
-      ArticleCard
+      ArticleCard,
     },
     data: () => ({
       title: "Feed",
       articles: [],
       articleCount: 0,
       showSpinner: false,
-      showCategoryMenu: false,
-      selectedCategory: null,
       selectedItem: {
         value: "all",
         display: "All news"
@@ -139,25 +93,25 @@
 
     }),
     computed: {
-
-      // selectedCategoryLabel() {
-      //   return this.selectedCategory != null ? this.selectedCategory : "Category";
-      // },
-
-      // filteredList() {
-      //   if (this.selectedCategory != null) {
-      //     return this.articles.filter(article => article.publisherCategory.toLowerCase() == this.selectedCategory.toLowerCase());
-      //   }
-      //   return this.articles;
-      // },
-
       subscriptions() {
         return this.$store.getters.subscriptions;
       },
     },
 
     methods: {
-      async getArticles() {
+      async getFirstBatchOfArticles() {
+        try {
+          const response = await fetchArticles(this.$store.state.user.authenticationToken, this.selectedItem.value,
+            0, 20);
+          this.articles = response.articles;
+          this.articleCount = response.count;
+        } catch (error) {
+          console.log(error);
+        }
+        this.showSpinner = false;
+      },
+
+      async getNextBatchOfArticles() {
         try {
           const response = await fetchArticles(this.$store.state.user.authenticationToken, this.selectedItem.value,
             this.articleCount, 20);
@@ -169,19 +123,22 @@
         }
         this.showSpinner = false;
       },
-
     },
+    
 
     watch: {
       selectedItem() {
         this.articles = [];
         this.articleCount = 0;
         this.showSpinner = true;
-        this.getArticles();
+        this.getFirstBatchOfArticles();
       }
     },
+    activated() {
+      this.getFirstBatchOfArticles();
+    },
 
-    mounted() {
+    created() {
       this.showSpinner = true;
 
       if (this.subscriptions.length < 1) {
@@ -189,7 +146,7 @@
         return;
       }
 
-      this.getArticles();
+      this.getFirstBatchOfArticles();
 
       window.onscroll = () => {
         let bottomOfWindow =
@@ -198,7 +155,7 @@
 
         if (bottomOfWindow) {
 
-          this.getArticles()
+          this.getNextBatchOfArticles()
 
         }
       };

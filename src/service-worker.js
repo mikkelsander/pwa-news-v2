@@ -5,73 +5,164 @@ workbox.core.setCacheNameDetails({
     runtime: 'runtime-cache'
 });
 
-workbox.setConfig({
-    debug: false
+
+//set up caching of offline google analytics requests to track user's offline behaviour
+workbox.googleAnalytics.initialize({
+	parameterOverrides: {
+		cd1: 'offline',
+	},
 });
 
-workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
+//set up precaching of app shell and 
 workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
 
 
-//cache available publishers
+//background syncing subscriptions requests
+const subscriptionBackgroundSync = new workbox.backgroundSync.Plugin('subscriptions', {
+	maxRetentionTime: 1 * 60 // Retry for max of 1 Hours
+});
 
+
+//cache offline subscription post requests
 workbox.routing.registerRoute(
-    new RegExp('https://newsapi.org/v2/sources?(.*)'),
-    workbox.strategies.staleWhileRevalidate({
-        cacheName: 'publishers',
-        plugins: [
-            new workbox.expiration.Plugin({
-                maxEntries: 5,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-            }),
-        ],
-    })
+	new RegExp('https://pwa-news-api.azurewebsites.net/api/subscriptions(.*)'),
+	workbox.strategies.networkOnly({
+		plugins: [subscriptionBackgroundSync]
+	}),
+	'POST'
 );
 
 
-//cache publisher icons
-
+//cache offline subscription delete requests
 workbox.routing.registerRoute(
-    /https:\/\/icon-locator\.herokuapp\.com\/icon\?url=(.*)/,
-    workbox.strategies.cacheFirst({
-        cacheName: 'publisher-icons',
-        plugins: [
-            new workbox.expiration.Plugin({
-                maxEntries: 140,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-            }),
-        ],
-    })
+	new RegExp('https://pwa-news-api.azurewebsites.net/api/subscriptions(.*)'),
+	workbox.strategies.networkOnly({
+		plugins: [subscriptionBackgroundSync]
+	}),
+	'DELETE'
 );
 
 
-//cache headlines
-
+//cache subscription get requests
 workbox.routing.registerRoute(
-    new RegExp('https://newsapi.org/v2/top-headlines?(.*)'),
-    workbox.strategies.networkFirst({
-        cacheName: 'articles',
-        plugins: [
-            new workbox.expiration.Plugin({
-                maxEntries: 200,
-                maxAgeSeconds: 2 * 24 * 60 * 60, // 2 Days
-            }),
-        ],
-    })
+	new RegExp('https://pwa-news-api.azurewebsites.net/api/subscriptions(.*)'),
+	workbox.strategies.networkFirst({
+		cacheName: 'subscriptions',
+		plugins: [
+			new workbox.expiration.Plugin({
+				maxEntries: 5,
+				maxAgeSeconds: 2 * 24 * 60 * 60, // 3 Days
+			}),
+		],
+	})
 );
 
-//cache headline images
+
+//cache publishers
+workbox.routing.registerRoute(
+	new RegExp('https://pwa-news-api.azurewebsites.net/api/publishers(.*)'),
+	workbox.strategies.cacheFirst({
+		cacheName: 'publishers',
+		plugins: [
+			new workbox.expiration.Plugin({
+				maxEntries: 5,
+				maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+			}),
+		],
+	})
+);
+
+
+//cache articles
+workbox.routing.registerRoute(
+	new RegExp('https://pwa-news-api.azurewebsites.net/api/articles?(.*)'),
+	workbox.strategies.networkFirst({
+		cacheName: 'articles',
+		plugins: [
+			new workbox.expiration.Plugin({
+				maxEntries: 30,
+				maxAgeSeconds: 3 * 24 * 60 * 60, // 3 Days
+			}),
+		],
+	})
+);
+
+
+//cache images
+workbox.routing.registerRoute(
+	/.+\.(?:png|gif|jpg|jpeg|svg)$/,
+	workbox.strategies.networkFirst({
+		cacheName: 'images',
+		plugins: [
+			new workbox.expiration.Plugin({
+				maxEntries: 100,
+				maxAgeSeconds: 1 * 24 * 60 * 60, // 1 Days
+			}),
+		],
+	})
+);
+
 
 workbox.routing.registerRoute(
-    /.+\.(?:png|gif|jpg|jpeg|svg)$/,
-    workbox.strategies.networkFirst({
-        cacheName: 'images',
-        plugins: [
-            new workbox.expiration.Plugin({
-                maxEntries: 200,
-                maxAgeSeconds: 2 * 24 * 60 * 60, // 2 Days
-            }),
-        ],
-    })
+	/https:\/\/icon-locator\.herokuapp\.com\/icon\?url=(.*)/,
+	async ({
+		event
+	}) => {
+		try {
+            return await workbox.strategies.networkFirst().handle({event});
+            
+		} catch (error) {
+            console.log(event.request);
+            const params = new URL(event.request.url).searchParams;	
+            console.log(params)	
+            const url = params.get('url');
+            const domain = extractRootDomain(url);	
+            console.log(domain)
+            const letter = domain.substring(0,1).toUpperCase();
+            console.log(letter)
+			return caches.match(`/img/material-letter-icons/${letter}.svg`);
+		}
+	}
 );
+
+
+//helper functions
+
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+
+
+function extractRootDomain(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain 
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}

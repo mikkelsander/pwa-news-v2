@@ -9,8 +9,11 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import VueClazyLoad from 'vue-clazy-load'
 
+Vue.use(VueClazyLoad);
 
+Vue.config.devtools = true
 Vue.config.productionTip = false;
 
 new Vue({
@@ -19,18 +22,12 @@ new Vue({
   render: h => h(App),
 
   created() {
-    this.test();
+    this.setInitialState();
 
   },
   methods: {
-    async test() {
-
+    async setInitialState() {
       await this.$store.dispatch('setInitialState');
-
-      // await this.$store.dispatch('authenticateUser', {
-      //   username: "test123",
-      //   password: "test"
-      // });
     }
   }
 
