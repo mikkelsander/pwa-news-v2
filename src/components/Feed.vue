@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-card class="feed-toolbar max-width">
-      <v-toolbar card color="white">
+      <v-toolbar :z-index="1"  card color="white">
         <v-spacer></v-spacer>
 
         <v-subheader>
-          <v-menu offset-y>
+          <v-menu :z-index="2" offset-y>
             <div slot="activator">
               <span class="subheading">{{ selectedItem.display }}</span>
               <v-icon class="feed-icon pl-1">expand_more</v-icon>
@@ -56,9 +56,6 @@
   import {
     fetchArticles
   } from "@/api-service";
-  import isYesterday from "date-fns/is_yesterday";
-  import isToday from "date-fns/is_today";
-  import differenceInCalendarDays from "date-fns/difference_in_calendar_days";
 
   export default {
     components: {

@@ -9,7 +9,7 @@
         </v-flex>
 
         <v-flex>
-          <v-select v-model="selectedCategory" color="indigo"  solo class="mx-3 mt-1" label="Category" prepend-inner-icon="filter" clearable :items="categories"></v-select>
+          <v-select :z-index="1" v-model="selectedCategory" color="indigo"  solo class="mx-3 mt-1" label="Category" prepend-inner-icon="filter" clearable :items="categories"></v-select>
         </v-flex>
 
         <v-flex>

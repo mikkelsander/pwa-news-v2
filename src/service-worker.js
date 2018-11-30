@@ -110,7 +110,7 @@ workbox.routing.registerRoute(
 		event
 	}) => {
 		try {
-            return await workbox.strategies.networkFirst().handle({event});
+            return await workbox.strategies.cacheFirst().handle({event});
             
 		} catch (error) {
             console.log(event.request);

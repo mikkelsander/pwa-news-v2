@@ -28,7 +28,7 @@
 					</v-flex>
 					<v-flex xs4>
 						<vue-clazy-load :src="imageUrl">
-								<img :src="imageUrl">
+								<img :src="imageUrl" @error="fallbackToAvatarUrl($event)">
 								<div class="preloader" slot="placeholder">
 									<v-progress-circular :size="20" :width="2" color="indigo" indeterminate></v-progress-circular>
 								</div>
@@ -85,7 +85,12 @@ export default {
     imageUrl() {
       return this.article.urlToImage != null ? this.article.urlToImage : this.avatarUrl;
     }
-  },
+	},
+	methods: {
+		fallbackToAvatarUrl(event) {
+			event.target.src = this.avatarUrl
+		}
+	},
   components: {
 		VueClazyLoad
   }

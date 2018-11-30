@@ -198,7 +198,7 @@
 
 			async createAccount() {
 				if (this.$refs.createForm.validate()) {
-					this.showSignInDialog = false
+					this.showCreateAccountDialog = false
 					await this.$store.dispatch("createUser", this.credentials);
 					this.$refs.createForm.reset();
 				}

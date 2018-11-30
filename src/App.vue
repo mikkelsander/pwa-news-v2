@@ -7,7 +7,7 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items v-if="showHomeScreenButton">
-        <v-btn color="white" flat small @click="addToHomeScreen()">Add to homescreen</v-btn>
+        <v-btn color="white" flat small @click="addToHomeScreen()">Install app</v-btn>
       </v-toolbar-items>
 
       <v-toolbar-items>
