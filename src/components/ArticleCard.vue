@@ -28,9 +28,12 @@
 					</v-flex>
 					<v-flex xs4>
 						<vue-clazy-load :src="imageUrl">
-								<img :src="imageUrl" @error="fallbackToAvatarUrl($event)">
+								<img :src="imageUrl">
 								<div class="preloader" slot="placeholder">
-									<v-progress-circular :size="20" :width="2" color="indigo" indeterminate></v-progress-circular>
+									<div style="width: 30px; height: 30px; margin: 0 auto">
+										<v-progress-circular :size="30" :width="2" color="indigo" indeterminate></v-progress-circular>
+									</div>
+									
 								</div>
 						</vue-clazy-load>
 					</v-flex>
@@ -71,11 +74,13 @@ export default {
       type: Object,
       required: true
     }
-  },
+	},
+	
   data: () => ({
     expand: false,
     distanceInWordsToNow
-  }),
+	}),
+	
   computed: {
     avatarUrl() {
       return `https://icon-locator.herokuapp.com/icon?url=${
@@ -86,11 +91,7 @@ export default {
       return this.article.urlToImage != null ? this.article.urlToImage : this.avatarUrl;
     }
 	},
-	methods: {
-		fallbackToAvatarUrl(event) {
-			event.target.src = this.avatarUrl
-		}
-	},
+
   components: {
 		VueClazyLoad
   }

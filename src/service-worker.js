@@ -77,7 +77,7 @@ workbox.routing.registerRoute(
 //cache articles
 workbox.routing.registerRoute(
 	new RegExp('https://pwa-news-api.azurewebsites.net/api/articles?(.*)'),
-	workbox.strategies.networkFirst({
+	workbox.strategies.staleWhileRevalidate({
 		cacheName: 'articles',
 		plugins: [
 			new workbox.expiration.Plugin({
@@ -92,35 +92,44 @@ workbox.routing.registerRoute(
 //cache images
 workbox.routing.registerRoute(
 	/.+\.(?:png|gif|jpg|jpeg|svg)$/,
-	workbox.strategies.networkFirst({
-		cacheName: 'images',
-		plugins: [
-			new workbox.expiration.Plugin({
-				maxEntries: 100,
-				maxAgeSeconds: 1 * 24 * 60 * 60, // 1 Days
-			}),
-		],
-	})
+
+	async ({
+		event
+	}) => {
+	try {
+		return await workbox.strategies.staleWhileRevalidate({
+			cacheName: 'images',
+			plugins: [
+				new workbox.expiration.Plugin({
+					maxEntries: 80,
+					maxAgeSeconds: 3 * 24 * 60 * 60, // 3 Days
+				}),
+			],
+		}).handle({event});
+	}
+	catch(error) {
+		console.log(error)
+		console.log("hej")
+		console.log(event.request)
+		return caches.match('/fallback-image.png')
+	}
+}
 );
 
 
 workbox.routing.registerRoute(
 	/https:\/\/icon-locator\.herokuapp\.com\/icon\?url=(.*)/,
+
 	async ({
 		event
 	}) => {
 		try {
-            return await workbox.strategies.cacheFirst().handle({event});
-            
+            return await workbox.strategies.cacheFirst().handle({event});           
 		} catch (error) {
-            console.log(event.request);
             const params = new URL(event.request.url).searchParams;	
-            console.log(params)	
             const url = params.get('url');
             const domain = extractRootDomain(url);	
-            console.log(domain)
             const letter = domain.substring(0,1).toUpperCase();
-            console.log(letter)
 			return caches.match(`/img/material-letter-icons/${letter}.svg`);
 		}
 	}
