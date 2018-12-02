@@ -19,6 +19,12 @@
     </v-toolbar>
 
     <v-content>
+      <div class="initial-load" v-if="isLoading">
+        <div class="loading-spinner">
+          <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+        </div>
+        <div class="text-xs-center mt-4 subheading">Server is booting. Please wait..</div>
+      </div>
       <keep-alive>
         <router-view v-if="!isLoading"/>
       </keep-alive>
@@ -47,6 +53,8 @@
 </template>
 
 <script>
+import { fetchPublishers } from '@/api-service';
+
 export default {
   name: "App",
 
@@ -54,16 +62,16 @@ export default {
     bottomNav: "Feed",
     showOfflineSnack: false,
     showHomeScreenButton: false,
-    deferredPrompt: null
+    deferredPrompt: null,
+    isLoading: false,
   }),
+
   computed: {
-    isLoading() {
-      return this.$store.state.loadingState;
-    },
     subscriptionsBadge() {
       return this.$store.state.badges.newSubscriptionsCount;
     }
   },
+  
   methods: {
     updateOnlineStatus() {
       this.showOfflineSnack = !window.navigator.onLine;
@@ -86,9 +94,21 @@ export default {
         }
         this.deferredPrompt = null;
       });
+    },
+
+    async setInitialState() {
+      this.isLoading = true;
+      await this.$store.dispatch('setInitialState');
+      console.log("sending empty request to boot server")
+      await fetchPublishers(); //send request to boot server on start up. Done in order to display "long loading time message"
+      this.isLoading = false;
     }
+    
   },
   created() {
+    
+    this.setInitialState();
+
     window.addEventListener("online", this.updateOnlineStatus);
     window.addEventListener("offline", this.updateOnlineStatus);
 
@@ -104,6 +124,22 @@ export default {
 </script>
 
 <style>
+
+
+.initial-load {
+  position: relative;
+  margin: 0 auto;
+  /* width: 250px; */
+  top: 30vh;
+}
+
+.initial-load > .loading-spinner {
+  position: relative;
+  margin: 0 auto;
+  width: 50px;
+  /* top: 200px; */
+}
+
 .max-width {
   max-width: 768px;
 }

@@ -26,23 +26,18 @@ export default new Vuex.Store({
       newSubscriptionsCount: 0
     },
     authenticated: false,
-    loadingState: true
   },
 
   getters: {
     subscriptions: state => {
       if (state.subscriptions == undefined) return [];
-      return state.subscriptions.sort(sub => sub.publisherName);
+      return state.subscriptions.sort((a, b) => a.publisherName.localeCompare(b.publisherName));
     },
   },
 
   mutations: {
     setAuthenticated(state, bool) {
       state.authenticated = bool
-    },
-
-    setLoadingState(state, bool) {
-      state.loadingState = bool;
     },
 
     setUser(state, user) {
@@ -76,13 +71,11 @@ export default new Vuex.Store({
     }) {
 
       console.log("SETTING INITIAL STATE")
-      commit('setLoadingState', true);
 
       IDBService.openConnection();
       var user = await IDBService.getAllItemsFromStore(IDBService.USER_STORE);
 
       if(user[0] == undefined) {
-        commit('setLoadingState', false);
         return; 
       }
 
@@ -96,9 +89,6 @@ export default new Vuex.Store({
 
       } catch (error) {    
         console.log(error)
-        
-      } finally {
-        commit('setLoadingState', false);
       }
     },
 
@@ -187,7 +177,7 @@ export default new Vuex.Store({
       
       const subscriptionExists = copy.find(sub => sub.publisherId == subscription.publisherId);
       if(subscriptionExists) return;
-
+      
       copy.push(subscription);
       commit("setSubscriptions", copy)
       commit("incrementSubscriptionsBadge");

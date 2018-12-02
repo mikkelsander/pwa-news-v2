@@ -1,7 +1,8 @@
 <template>
+<v-container fill-height class="pa-0">
   <v-layout row>
     <v-flex xs12 sm10 offset-sm1>
-      <v-card>
+      <v-card height="100%" class="xs-12" >
         <v-card flat>
           <v-img
             contain
@@ -61,9 +62,11 @@
     </v-flex>
 
     <v-snackbar v-model="showSnackbar" top :timeout="2000">
-      <div class="text-xs-center">Subscribing to top headlines from {{ publisher.name }}</div>
+      <div class="text-xs-center" v-if="isAuthenticated">Subscribing to top headlines from {{ publisher.name }}</div>
+      <div class="text-xs-center" v-else>Sign in to create subscriptions</div>
     </v-snackbar>
   </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -83,19 +86,28 @@ export default {
   computed: {
     isSubscribed() {
       return this.$store.getters.subscriptions.findIndex(sub => sub.publisherId == this.publisher.id) > -1       
+    },
+    isAuthenticated() {
+      return this.$store.state.authenticated;
     }
+
   },
 
   methods: {
     subscribe() {
       if(this.isSubscribed) return;
-      console.log("subscribing to " + this.publisher.name);
-      const subscription = {
-        publisherId: this.publisher.id,
-        publisherName: this.publisher.name,
-        publisherCategory: this.publisherCategory
+
+      if(this.isAuthenticated) {
+        console.log("subscribing to " + this.publisher.name);
+        const subscription = {
+          publisherId: this.publisher.id,
+          publisherName: this.publisher.name,
+          publisherCategory: this.publisher.category,
+          publisherUrl: this.publisher.url
+        }
+        this.$store.dispatch("addSubscription", subscription);
       }
-      this.$store.dispatch("addSubscription", subscription);
+      
       this.showSnackbar = true;
     }
   }

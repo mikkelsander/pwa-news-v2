@@ -20,15 +20,5 @@ new Vue({
   router,
   store,
   render: h => h(App),
-
-  created() {
-    this.setInitialState();
-
-  },
-  methods: {
-    async setInitialState() {
-      await this.$store.dispatch('setInitialState');
-    }
-  }
-
+  
 }).$mount("#app");

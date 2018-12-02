@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-card class="px-3 pt-3 pb-0">
+		<v-card class="px-3 pt-3 pb-2">
 			<div @click="expand = !expand">
 				<v-layout row class="pb-3">
 					<v-flex xs7>
@@ -18,7 +18,7 @@
 						<div class="timestamp">{{ distanceInWordsToNow(new Date(article.publishedAt)) }} ago</div>
 					</v-flex>
 				</v-layout>
-				<v-layout row class="pb-3">
+				<v-layout row class="pb-2">
 					<v-flex xs8>
 						<v-card-title class="pa-0 pr-3">
 							<div>
@@ -32,8 +32,7 @@
 								<div class="preloader" slot="placeholder">
 									<div style="width: 30px; height: 30px; margin: 0 auto">
 										<v-progress-circular :size="30" :width="2" color="indigo" indeterminate></v-progress-circular>
-									</div>
-									
+									</div>									
 								</div>
 						</vue-clazy-load>
 					</v-flex>
@@ -41,19 +40,20 @@
 			</div>
 
 			<v-slide-y-transition>
-				<v-layout>
+				<v-layout v-show="expand">
 					<v-flex>
+						<div class="body-1 font-weight-light font-italic pb-2" v-if="article.description != null" @click="expand = !expand">{{ article.description }}</div>
 						<v-divider light></v-divider>
-						<v-card-actions v-show="expand">
+						<v-card-actions class="pb-0">
 							<v-spacer></v-spacer>
-							<span class="caption">Full article</span>
+							<span class="caption">Link to article</span>
 							<v-btn icon :href="article.url">
 								<v-icon color="">link</v-icon>
 							</v-btn>
-							<span class="caption ml-2">Add to list</span>
+							<!-- <span class="caption ml-2">Add to list</span>
 							<v-btn disabled icon>
 								<v-icon color="grey">playlist_add</v-icon>
-							</v-btn>
+							</v-btn> -->
 						</v-card-actions>
 					</v-flex>
 				</v-layout>

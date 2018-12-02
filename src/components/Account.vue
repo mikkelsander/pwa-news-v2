@@ -45,7 +45,10 @@
 					<v-list two-line>
 						<v-subheader>Publishers ({{ subscriptions.length }})</v-subheader>
 
-						<template v-for="subscription in subscriptions">
+						<div class="text-xs-center mt-5" v-if="showSpinner">
+							<v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+						</div>
+						<template v-for="subscription in subscriptions" v-else>
 							<v-list-tile :key="subscription.publisherId + '-item'" avatar>
 								<v-list-tile-avatar>
 									<vue-clazy-load :src="`https://icon-locator.herokuapp.com/icon?url=${subscription.publisherUrl}&amp;size=30..70..100`">
@@ -96,7 +99,8 @@
 									<v-layout column>
 										<v-form ref="createForm">
 											<v-flex xs12>
-												<v-text-field color="indigo" v-model="credentials.username" label="Username" :rules="userNameRules" required></v-text-field>
+												<v-text-field color="indigo" v-model="credentials.username" label="Username" :rules="userNameRules"
+												 required></v-text-field>
 											</v-flex>
 											<v-flex xs12>
 												<v-text-field color="indigo" v-model="credentials.password" label="Password" :rules="passwordRules" type="password"
@@ -122,7 +126,8 @@
 									<v-layout column>
 										<v-form ref="loginForm">
 											<v-flex xs12>
-												<v-text-field color="indigo" v-model="credentials.username" label="Username" :rules="userNameRules" required></v-text-field>
+												<v-text-field color="indigo" v-model="credentials.username" label="Username" :rules="userNameRules"
+												 required></v-text-field>
 											</v-flex>
 											<v-flex xs12>
 												<v-text-field color="indigo" v-model="credentials.password" label="Password" :rules="passwordRules" type="password"
@@ -157,11 +162,13 @@
 				username: '',
 				password: ''
 			},
+			showSpinner: false,
 			showSignOutDialog: false,
 			showCreateAccountDialog: false,
 			showSignInDialog: false,
 			showSnackbar: false,
 			snackbarMessage: "",
+
 
 			userNameRules: [
 				v => !!v || 'Username is required'
@@ -193,7 +200,9 @@
 			},
 
 			async getSubscriptions() {
+				this.showSpinner = true;
 				await this.$store.dispatch("getSubscriptions");
+				this.showSpinner = false;
 			},
 
 			async createAccount() {
@@ -217,9 +226,9 @@
 				await this.$store.dispatch("signOutUser");
 			}
 		},
-		activated() {
-			this.getSubscriptions();
-		},
+		// activated() {
+		// 	this.getSubscriptions();
+		// },
 
 		created() {
 			this.getSubscriptions();

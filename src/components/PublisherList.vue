@@ -85,17 +85,15 @@
       showSpinner: true,
       search: "",
       selectedCategory: "",
-      showCategoryMenu: false,
       categories: [
-        "business",
-        "entertainment",
-        "general",
-        "health",
-        "science",
-        "sports",
-        "technology"
+        "Business",
+        "Entertainment",
+        "General",
+        "Health",
+        "Science",
+        "Sports",
+        "Technology"
       ],
-      showChip: false
     }),
 
     computed: {
@@ -152,9 +150,9 @@
       },
     },
 
-    activated() {
-      this.getPublishers();
-    },
+    // activated() {
+    //   this.getPublishers();
+    // },
     created() {
       this.getPublishers();
     },
