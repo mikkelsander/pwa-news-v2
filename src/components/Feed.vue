@@ -132,9 +132,9 @@
       }
     },
 
-    // activated() {
-    //   this.getFirstBatchOfArticles();
-    // },
+    activated() {
+      this.getFirstBatchOfArticles();
+    },
 
     created() {
       this.showSpinner = true;
