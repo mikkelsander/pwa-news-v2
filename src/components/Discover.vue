@@ -1,25 +1,23 @@
 <template>
   <v-container fill-height>
     <v-card height="100%" width="100%" class="xs-12">
-
       <v-list two-line>
-        <v-container>
-          <v-layout column>
-            <v-subheader class="subheading">Browse popular news channels</v-subheader>
+        <v-layout column>
+          <v-subheader class="subheading">Browse popular news channels</v-subheader>
 
-            <v-flex xs-12>
-              <v-text-field color="indigo" class="mt-3 mx-3" clearable prepend-inner-icon="search" label="Search"
-                v-model="search" solo></v-text-field>
-            </v-flex>
+          <v-flex xs-12>
+            <v-text-field color="indigo" class="mt-3 mx-3" clearable prepend-inner-icon="search" label="Search"
+              v-model="search" solo></v-text-field>
+          </v-flex>
 
-            <v-flex xs-12>
-              <v-select :z-index="1" v-model="selectedCategory" color="indigo" solo class="mx-3 mt-1" label="Category"
-                prepend-inner-icon="filter" clearable :items="categories"></v-select>
-            </v-flex>
-
-          </v-layout>
-        </v-container>
+          <v-flex xs-12>
+            <v-select :z-index="1" v-model="selectedCategory" color="indigo" solo class="mx-3 mt-1" label="Category"
+              prepend-inner-icon="filter" clearable :items="categories"></v-select>
+          </v-flex>
+        </v-layout>
+        
         <v-subheader>Showing {{ filteredPublishers.length }} publishers</v-subheader>
+        
         <div class="text-xs-center mt-5" v-if="showSpinner">
           <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
         </div>
@@ -49,7 +47,6 @@
           </template>
         </div>
       </v-list>
-
     </v-card>
   </v-container>
 </template>
