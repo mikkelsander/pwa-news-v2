@@ -45,18 +45,18 @@ workbox.routing.registerRoute(
 
 
 //cache subscription get requests
-workbox.routing.registerRoute(
-	new RegExp('https://pwa-news-api.azurewebsites.net/api/subscriptions(.*)'),
-	workbox.strategies.networkFirst({
-		cacheName: 'subscriptions',
-		plugins: [
-			new workbox.expiration.Plugin({
-				maxEntries: 5,
-				maxAgeSeconds: 2 * 24 * 60 * 60, // 3 Days
-			}),
-		],
-	})
-);
+// workbox.routing.registerRoute(
+// 	new RegExp('https://pwa-news-api.azurewebsites.net/api/subscriptions(.*)'),
+// 	workbox.strategies.networkFirst({
+// 		cacheName: 'subscriptions',
+// 		plugins: [
+// 			new workbox.expiration.Plugin({
+// 				maxEntries: 5,
+// 				maxAgeSeconds: 2 * 24 * 60 * 60, // 3 Days
+// 			}),
+// 		],
+// 	})
+// );
 
 
 //cache publishers

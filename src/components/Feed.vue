@@ -98,6 +98,7 @@
     methods: {
       async getFirstBatchOfArticles() {
         try {
+          this.showSpinner = true;
           const response = await fetchArticles(this.$store.state.user.authenticationToken, this.selectedItem.value,
             0, 20);
           this.articles = response.articles;

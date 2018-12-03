@@ -5,8 +5,8 @@ export default class {
 
 	constructor() {
 		this.DB_NAME = 'pwa-news';
-		this.DB_VERSION = 1;
-		// this.SUBSCRIPTIONS_STORE = 'subscriptions';
+		this.DB_VERSION = 2;
+		this.SUBSCRIPTIONS_STORE = 'subscriptions';
 		this.USER_STORE = 'user'
 		this.dbConnection = null;
 	}
@@ -26,10 +26,10 @@ export default class {
 				upgradeDb.createObjectStore(this.USER_STORE, {
 					keyPath: 'id'
 				});
-				// case 1:
-				// 	upgradeDb.createObjectStore(this.SUBSCRIPTIONS_STORE, {
-				// 		keyPath: 'publisherId'
-				// 	});
+				case 1:
+					upgradeDb.createObjectStore(this.SUBSCRIPTIONS_STORE, {
+						keyPath: 'publisherId'
+					});
 			}
 		});
 	}

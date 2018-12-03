@@ -78,11 +78,14 @@ export default new Vuex.Store({
       if(user[0] == undefined) {
         return; 
       }
-
+      
       commit('setUser', user[0]);
       console.log("user", state.user)
       commit('setAuthenticated', true);
-      
+
+      var subscriptions = await IDBService.getAllItemsFromStore(IDBService.SUBSCRIPTIONS_STORE);
+      commit('setSubscriptions', subscriptions)
+  
       try {    
         await dispatch("getSubscriptions", state.user.authenticationToken);
         console.log("subs", state.subscriptions)
@@ -163,6 +166,11 @@ export default new Vuex.Store({
         const subscriptions = (await fetchSubscriptions(state.user.authenticationToken)).subscriptions;
         commit("setSubscriptions", subscriptions);
 
+        await IDBService.clearStore(IDBService.SUBSCRIPTIONS_STORE);
+        for(let subscription of subscriptions) {
+          await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE)
+        }
+
       } catch (error) {
         console.log(error)
       }
@@ -181,6 +189,7 @@ export default new Vuex.Store({
       copy.push(subscription);
       commit("setSubscriptions", copy)
       commit("incrementSubscriptionsBadge");
+      await IDBService.addItemToStore(subscription, IDBService.SUBSCRIPTIONS_STORE)
 
       try {      
         await createSubscription(subscription.publisherId, state.user.authenticationToken);
@@ -204,7 +213,8 @@ export default new Vuex.Store({
       copy.splice(index, 1);
 
       commit("setSubscriptions", copy)
-
+      await IDBService.deleteItemFromStore(publisherId, IDBService.SUBSCRIPTIONS_STORE);
+      
       try {
         await deleteSubscription(publisherId, state.user.authenticationToken);
 

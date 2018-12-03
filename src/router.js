@@ -14,22 +14,22 @@ export default new Router({
     },
     {
       path: "/feed",
-      name: "feed",
+      name: "Feed",
       component: Feed
     },
     {
       path: "/discover",
-      name: "discover",
+      name: "Discover",
       component: Discover
     },
     {
       path: "/account",
-      name: "account",
+      name: "Account",
       component: Account
     },
     {
       path: "/publisher/:id",
-      name: "publisher",
+      name: "Publisher",
       component: Publisher,
       props: true
     },

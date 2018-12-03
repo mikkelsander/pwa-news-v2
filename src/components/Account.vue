@@ -226,9 +226,6 @@
 				await this.$store.dispatch("signOutUser");
 			}
 		},
-		// activated() {
-		// 	this.getSubscriptions();
-		// },
 
 		created() {
 			this.getSubscriptions();

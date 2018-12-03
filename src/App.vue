@@ -25,9 +25,14 @@
         </div>
         <div class="text-xs-center mt-4 subheading">Server is booting. Please wait..</div>
       </div>
+      
+    
       <keep-alive>
+        <transition name="fade">
         <router-view v-if="!isLoading"/>
+        </transition>
       </keep-alive>
+
     </v-content>
 
     <v-bottom-nav class=".v-bottom-nav max-width" app fixed :active.sync="bottomNav" :value="true">
@@ -59,7 +64,7 @@ export default {
   name: "App",
 
   data: () => ({
-    bottomNav: "Feed",
+    bottomNav: "",
     showOfflineSnack: false,
     showHomeScreenButton: false,
     deferredPrompt: null,
@@ -102,11 +107,11 @@ export default {
       console.log("sending empty request to boot server")
       await fetchPublishers(); //send request to boot server on start up. Done in order to display "long loading time message"
       this.isLoading = false;
-    }
-    
+    },
+   
   },
   created() {
-    
+    this.bottomNav = this.$route.name;
     this.setInitialState();
 
     window.addEventListener("online", this.updateOnlineStatus);
@@ -119,12 +124,26 @@ export default {
       // Stash the event so it can be triggered later.
       this.deferredPrompt = e;
     });
-  }
-};
+  },
+}
 </script>
 
 <style>
+.fade-enter-active  {
+  transition-property: opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
+}
 
+.fade-leave-active {
+  transition-duration: 0.2s;
+   transition-property: opacity;
+  transition-timing-function: ease-in;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
 
 .initial-load {
   position: relative;
@@ -167,4 +186,5 @@ export default {
   filter: none;
   opacity: 1;
 }
+
 </style>
