@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="feed-toolbar max-width">
-      <v-toolbar :z-index="1"  card color="white">
+      <v-toolbar :z-index="1" card color="white">
         <v-spacer></v-spacer>
 
         <v-subheader>
@@ -26,28 +26,27 @@
         </v-toolbar-items> -->
       </v-toolbar>
     </v-card>
-      <v-container class="pt-5">
-        <v-layout column>
-          <v-subheader class="subheading mt-3">News feed</v-subheader>
-          <div class="text-xs-center mt-5" v-if="showSpinner">
-            <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
-          </div>
-          <div v-else>
-            <div>
-              <v-flex class="mb-2 mt-1" v-for="(article, index) in articles" :key="index">
-                <article-card :article="article"></article-card>
-              </v-flex>
-            </div>
-            <v-flex>
-              <p class="text-xs-center mt-5 subheading mx-2" v-if="subscriptions.length < 1">
-                You currently don't have any active subscriptions. Head over to the discover page and find your
-                favorite
-                publishers.
-              </p>
+    <v-container class="pt-5">
+      <v-layout column>
+        <v-subheader class="subheading mt-3">News feed</v-subheader>
+        <div class="text-xs-center mt-5" v-if="showSpinner">
+          <v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
+        </div>
+        <div v-else>
+          <div>
+            <v-flex class="mb-2 mt-1" v-for="(article, index) in articles" :key="index">
+              <article-card :article="article"></article-card>
             </v-flex>
           </div>
-        </v-layout>
-      </v-container>
+          <v-flex>
+            <p class="text-xs-center mt-5 subheading mx-2" v-if="subscriptions.length < 1">
+              You currently don't have any active subscriptions. Head over to the discover page and find your
+              favorite publishers.
+            </p>
+          </v-flex>
+        </div>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
@@ -122,7 +121,6 @@
         this.showSpinner = false;
       },
     },
-    
 
     watch: {
       selectedItem() {

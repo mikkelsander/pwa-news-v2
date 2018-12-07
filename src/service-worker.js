@@ -77,7 +77,7 @@ workbox.routing.registerRoute(
 //cache articles
 workbox.routing.registerRoute(
 	new RegExp('https://pwa-news-api.azurewebsites.net/api/articles?(.*)'),
-	workbox.strategies.staleWhileRevalidate({
+	workbox.strategies.networkFirst({
 		cacheName: 'articles',
 		plugins: [
 			new workbox.expiration.Plugin({
@@ -97,7 +97,7 @@ workbox.routing.registerRoute(
 		event
 	}) => {
 	try {
-		return await workbox.strategies.staleWhileRevalidate({
+		return await workbox.strategies.cacheFirst({
 			cacheName: 'images',
 			plugins: [
 				new workbox.expiration.Plugin({
@@ -108,9 +108,6 @@ workbox.routing.registerRoute(
 		}).handle({event});
 	}
 	catch(error) {
-		console.log(error)
-		console.log("hej")
-		console.log(event.request)
 		return caches.match('/fallback-image.png')
 	}
 }
@@ -124,7 +121,7 @@ workbox.routing.registerRoute(
 		event
 	}) => {
 		try {
-            return await workbox.strategies.cacheFirst().handle({event});           
+            return await workbox.strategies.networkOnly().handle({event});           
 		} catch (error) {
             const params = new URL(event.request.url).searchParams;	
             const url = params.get('url');

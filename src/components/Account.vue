@@ -48,7 +48,9 @@
 						<div class="text-xs-center mt-5" v-if="showSpinner">
 							<v-progress-circular :size="50" color="indigo" indeterminate></v-progress-circular>
 						</div>
-						<template v-for="subscription in subscriptions" v-else>
+						<transition-group name="fade-item">
+						<div v-for="subscription in subscriptions" :key="subscription.publisherId">
+						
 							<v-list-tile :key="subscription.publisherId + '-item'" avatar>
 								<v-list-tile-avatar>
 									<vue-clazy-load :src="`https://icon-locator.herokuapp.com/icon?url=${subscription.publisherUrl}&amp;size=30..70..100`">
@@ -60,8 +62,8 @@
 								</v-list-tile-avatar>
 
 								<v-list-tile-content>
-									<v-list-tile-title v-html="subscription.publisherName"></v-list-tile-title>
-									<v-list-tile-sub-title>{{subscription.publisherCategory}}</v-list-tile-sub-title>
+									<v-list-tile-title> {{subscription.publisherName}} </v-list-tile-title>
+									<v-list-tile-sub-title> {{subscription.publisherCategory}} </v-list-tile-sub-title>
 								</v-list-tile-content>
 
 								<v-list-tile-action>
@@ -72,7 +74,9 @@
 							</v-list-tile>
 
 							<v-divider :inset="true" :key="subscription.publisherId + '-divider'"></v-divider>
-						</template>
+						</div>
+						</transition-group>
+						
 					</v-list>
 
 					<v-snackbar v-model="showSnackbar" top :timeout="2000">{{ snackbarMessage }}</v-snackbar>

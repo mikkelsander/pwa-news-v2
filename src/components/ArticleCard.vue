@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-card class="px-3 pt-3 pb-2">
+		<v-card	 class="px-3 pt-3 pb-2">
 			<div @click="expand = !expand">
 				<v-layout row class="pb-3">
 					<v-flex xs7>
@@ -12,7 +12,7 @@
 								</div>
 							</vue-clazy-load>
 						</v-avatar>
-						<span class="caption">{{ article.publisherName }}</span>
+						<span class="publisher-name caption">{{ article.publisherName }}</span>
 					</v-flex>
 					<v-flex xs5>
 						<div class="timestamp">{{ distanceInWordsToNow(new Date(article.publishedAt)) }} ago</div>
@@ -27,7 +27,7 @@
 						</v-card-title>
 					</v-flex>
 					<v-flex xs4>
-						<vue-clazy-load :src="imageUrl">
+						<vue-clazy-load class="article-image" :src="imageUrl">
 								<img :src="imageUrl">
 								<div class="preloader" slot="placeholder">
 									<div style="width: 30px; height: 30px; margin: 0 auto">
@@ -99,10 +99,6 @@ export default {
 </script>
 
 <style>
-article-image {
-  height: 90px;
-  width: 100%;
-}
 
 img {
   max-width: 100%;
@@ -111,5 +107,10 @@ img {
 .timestamp {
   font-size: 10px;
   text-align: end;
+}
+
+.publisher-name {
+	position: relative;
+  top: -2px;
 }
 </style>

@@ -27,11 +27,11 @@
       </div>
       
     
+    <transition name="fade-page">
       <keep-alive>
-        <transition name="fade">
         <router-view v-if="!isLoading"/>
-        </transition>
       </keep-alive>
+    </transition>
 
     </v-content>
 
@@ -129,19 +129,44 @@ export default {
 </script>
 
 <style>
-.fade-enter-active  {
+.fade-page-enter-active  {
   transition-property: opacity;
   transition-duration: 0.2s;
   transition-timing-function: ease-in;
 }
 
-.fade-leave-active {
-  transition-duration: 0.2s;
+.fade-page-enter-active {
+  transition-delay: 0.12s
+}
+
+.fade-page-leave-active {
+  transition-duration: 0.12s;
    transition-property: opacity;
   transition-timing-function: ease-in;
 }
 
-.fade-enter, .fade-leave-active {
+.fade-page-enter, .fade-leave-active {
+  opacity: 0
+}
+
+
+.fade-item-enter-active  {
+  transition-property: opacity;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in;
+}
+
+.fade-item-enter-active {
+  transition-delay: 0.1s
+}
+
+.fade-item-leave-active {
+  transition-duration: 0.5s;
+   transition-property: opacity;
+  transition-timing-function: ease-in;
+}
+
+.fade-item-enter, .fade-item-leave-active {
   opacity: 0
 }
 
